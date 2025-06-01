@@ -1,0 +1,17 @@
+{
+    "led_count": 144,
+    "led_order": "GRB",
+    "gpio_pin": 18,
+    "color_instruction": {
+        "identifier": "color_static_kelvin",
+        "kelvin": 4000
+    },
+    "alpha_instruction": {
+        "identifier": "alpha_static",
+        "alpha": 0.6
+    },
+    "gamma_instruction": {
+        "identifier": "gamma_static",
+        "gamma": 2.4
+    }
+}
