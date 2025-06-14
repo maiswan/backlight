@@ -9,6 +9,6 @@ __all__ = ["AlphaPulseInstruction", "AlphaStaticInstruction", "AlphaRollingInstr
 
 # Discriminated unions
 AlphaInstructionUnion = Annotated[
-    Union[AlphaStaticInstruction, AlphaPulseInstruction, AlphaRollingInstruction],
+    Union[AlphaPulseInstruction, AlphaStaticInstruction, AlphaRollingInstruction],
     Field(discriminator="identifier")
 ]

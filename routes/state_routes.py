@@ -7,10 +7,10 @@ from model.state import state
 
 router = APIRouter()
 
-async def stream():
+async def get_stream():
     previous = None
     try:
-        while not state.stop_sse_event.is_set():
+        while not state.stop_event.is_set():
             now = copy.deepcopy(state.config)
 
             if now != previous:
@@ -19,9 +19,12 @@ async def stream():
 
             await asyncio.sleep(1)
     except asyncio.CancelledError:
-        print("Exiting.")
+        print("Exiting stream.")
 
-# GETs
+# GET
 @router.get("/")
-async def get_stream():
-    return StreamingResponse(stream(), media_type="text/event-stream")
+async def get_state(stream: bool = False):
+    if (stream):
+        return StreamingResponse(get_stream(), media_type="text/event-stream")
+    
+    return state.to_dict()

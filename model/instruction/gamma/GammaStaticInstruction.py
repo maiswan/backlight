@@ -1,13 +1,14 @@
-import asyncio
-from typing import Callable, List, Optional, Literal, Coroutine
-
+from typing import Iterable, List, Literal
 from pydantic import Field
-from model.instruction.instruction_base import GammaInstruction
+from model.instruction.instruction import InstructionBase
 
-class GammaStaticInstruction(GammaInstruction):
+class GammaStaticInstruction(InstructionBase):
     identifier: Literal["gamma_static"] = "gamma_static"
     gamma: float = Field(..., ge=0.1, le=5.0)
 
-    def execute(self, current_gamma: List[float], redraw: Callable[[Optional[int]], None], stop: asyncio.Event) -> Coroutine | None:
-        current_gamma[0] = self.gamma
-        redraw(None)
+    def _compute(self, current_red: List[float], current_green: List[float], current_blue: List[float], targets: Iterable[int], time: float):
+        for i in targets:
+            current_red[i] = (current_red[i]/255) ** self.gamma * 255
+            current_green[i] = (current_green[i]/255) ** self.gamma * 255
+            current_blue[i] = (current_blue[i]/255) ** self.gamma * 255
+    

@@ -2,16 +2,31 @@
     "led_count": 144,
     "led_order": "GRB",
     "gpio_pin": 18,
-    "color_instruction": {
-        "identifier": "color_static_kelvin",
-        "kelvin": 4000
-    },
-    "alpha_instruction": {
-        "identifier": "alpha_static",
-        "alpha": 0.6
-    },
-    "gamma_instruction": {
-        "identifier": "gamma_static",
-        "gamma": 2.4
-    }
+    "fps": 30,
+    "instructions": [
+        {
+            "identifier": "color_static_kelvin",
+            "id": "4f3c34c8-b7ea-4dfb-a300-9ed1b794fc59",
+            "z_index": 0,
+            "targets": null,
+            "is_enabled": true,
+            "kelvin": 4500
+        },
+        {
+            "identifier": "alpha_static",
+            "id": "d4dcd3ef-1a82-4317-aefc-f769768d8fff",
+            "z_index": 10,
+            "targets": null,
+            "is_enabled": true,
+            "alpha": 0.3
+        },
+        {
+            "identifier": "gamma_static",
+            "id": "d4dcd3ef-1a82-4317-aefc-f769768d8a9a",
+            "z_index": 20,
+            "targets": null,
+            "is_enabled": true,
+            "gamma": 2.4
+        }
+    ]
 }

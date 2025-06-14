@@ -1,12 +1,12 @@
 import asyncio
 import math
 import time
-from typing import Callable, Optional, Literal, Coroutine
+from typing import Callable, Iterable, List, Literal, ClassVar, Optional
 
 from pydantic import Field, model_validator
-from model.instruction.instruction_base import AlphaInstruction
+from model.instruction.instruction import InstructionBase
 
-class AlphaRollingInstruction(AlphaInstruction):
+class AlphaRollingInstruction(InstructionBase):
     identifier: Literal["alpha_rolling"] = "alpha_rolling"
     period_ms: int = Field(..., ge=1000)
     maximas: float = Field(..., ge=0.01)
@@ -18,19 +18,11 @@ class AlphaRollingInstruction(AlphaInstruction):
         if self.alpha_min >= self.alpha_max:
             raise ValueError("alpha_min must be less than alpha_max")
         return self
-    
-    def execute(self, current_alpha: list[float], led_count: int, redraw: Callable[[Optional[int]], None], stop: asyncio.Event) -> Coroutine | None:        
-        return self.apply(self.period_ms, self.alpha_min, self.alpha_max, current_alpha, led_count, redraw, stop)
-    
-    async def apply(self, period_ms: int, alpha_min: float, alpha_max: float, current_alpha: list[float], led_count: int, redraw: Callable[[Optional[int]], None], stop: asyncio.Event) -> None:
-        start_time = time.time()
-        while not stop.is_set():
-            t = (time.time() - start_time) * 1000
-            for i in range(led_count):
-                alpha = (math.sin(self.maximas * math.pi * i/led_count + math.pi * 2 * (t % period_ms) / period_ms) + 1) / 2
-                alpha = round(alpha_min + (alpha_max - alpha_min) * alpha, 3)
-                current_alpha[i] = alpha           
-            
-            redraw(None)            
 
-            await asyncio.sleep(0.01)  # yield control
+    def _compute(self, current_red: List[float], current_green: List[float], current_blue: List[float], targets: Iterable[int], time: float):
+        for i in targets:
+            alpha = (math.sin(self.maximas * math.pi * i/sum(1 for target in targets) + math.pi * 2 * (time * 1000 % self.period_ms) / self.period_ms) + 1) / 2
+            alpha = round(self.alpha_min + (self.alpha_max - self.alpha_min) * alpha, 3)
+            current_red[i] = current_red[i] * alpha
+            current_green[i] = current_green[i] * alpha
+            current_blue[i] = current_blue[i] * alpha
