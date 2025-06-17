@@ -1,6 +1,7 @@
-from asyncio import Event
+from asyncio import Event, Task
 import asyncio
 import json
+import os
 import time
 from .config import Config
 from microcontroller import Pin
@@ -11,6 +12,8 @@ class State:
     current_red: list[float] = []
     current_green: list[float] = []
     current_blue: list[float] = []
+    config_path: str = ""
+    render_task: Task
     stop_event = Event()
     pixels: NeoPixel
 
@@ -46,8 +49,22 @@ class State:
         self.pixels[index] = (self.current_red[index], self.current_green[index], self.current_blue[index])
         self.pixels.show()
 
-    def __init__(self, filename: str):
-        with open(filename) as f:
+    def _get_config_path(self):
+        CONFIG_PATHS = [
+            'config.private.json',
+            'config.json'
+        ]
+
+        for config_path in CONFIG_PATHS:
+            if os.path.exists(config_path):
+                return config_path
+            
+        raise Exception("No configuration file found") 
+
+    def __init__(self):
+        self.config_path = self._get_config_path()
+
+        with open(self.config_path) as f:
             read = json.load(f)
 
         self.config = Config(
@@ -65,5 +82,20 @@ class State:
             pixel_order=self.config.led_order,
         )
 
+        self.render_task = asyncio.create_task(self.render_loop())
+        self.pixels.brightness = 1.0
+
+    async def deconstruct(self):
+        # Turn off LEDs
+        self.pixels.brightness = 0.0
+        self.pixels.show()
+
+        self.stop_event.set()
+        await self.render_task
+
+        # Write config
+        with open(self.config_path, 'w') as f:
+            json.dump(self.config.to_dict(), f, indent=4)
+
 # Singleton instance
-state: State = State('config.json')
+state: State = State()
