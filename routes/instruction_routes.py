@@ -25,8 +25,8 @@ async def post(instruction: instructionUnion = Body(...)):
     state.config.instructions.append(instruction)
     return instruction
 
-# POST new instructions and remove existing instructions
-@router.post("/reset")
+# PUT new instructions and remove existing instructions
+@router.put("/")
 async def post_reset(instructions: list[instructionUnion] = Body(...)):
     # do stuff
     state.config.instructions = instructions[::]
@@ -55,7 +55,7 @@ async def delete(id: UUID):
     return {"detail": "Deleted"}
 
 # DELETE all existing instructions
-@router.delete("/all")
+@router.delete("/")
 async def delete_all():
     if len(state.config.instructions) == 0:
         raise HTTPException(status_code=404, detail="No instructions to delete")
