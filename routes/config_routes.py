@@ -23,8 +23,9 @@ async def get_stream():
 
 # GET
 @router.get("/")
-async def get_state(stream: bool = False):
-    if (stream):
-        return StreamingResponse(get_stream(), media_type="text/event-stream")
-    
-    return state.to_dict()
+async def get_config():
+    return state.config.to_dict()
+
+@router.get("/stream")
+async def get_config_stream():
+    return StreamingResponse(get_stream(), media_type="text/event-stream")
