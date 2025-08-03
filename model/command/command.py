@@ -25,7 +25,7 @@ class CommandBase(BaseModel, ABC):
             return range(led_count)
 
         output = []
-        ranges = self.targets.replace(",", "").split(" ")
+        ranges = self.targets.replace(",", " ").split()
 
         for item in ranges:
             if item.isdigit():
