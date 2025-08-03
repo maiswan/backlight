@@ -2,30 +2,28 @@
 from typing import Annotated, Union
 from pydantic import BaseModel, Field
 
-from .instruction.instruction import InstructionBase
-# from model.instruction.instruction import InstructionUnion
-from model.instruction.alpha import AlphaInstructionUnion
-from model.instruction.color import ColorInstructionUnion
-from model.instruction.gamma import GammaInstructionUnion
+from model.command.alpha import AlphaCommandUnion
+from model.command.color import ColorCommandUnion
+from model.command.gamma import GammaCommandUnion
 
-instructionUnion = Annotated[
-    Union[AlphaInstructionUnion, ColorInstructionUnion, GammaInstructionUnion],
-    Field(discriminator="identifier")
+commandUnion = Annotated[
+    Union[AlphaCommandUnion, ColorCommandUnion, GammaCommandUnion],
+    Field(discriminator="mode")
 ]
 
 # Main config model
 class Config(BaseModel):
     led_count: int
-    led_order: str
+    pixel_order: str
     gpio_pin: int
     fps: int
-    instructions: list[instructionUnion] = []
+    commands: list[commandUnion] = []
 
     def to_dict(self):
         return {
             'led_count': self.led_count,
-            'led_order': self.led_order,
+            'pixel_order': self.pixel_order,
             'gpio_pin': self.gpio_pin,
             'fps': self.fps,
-            'instructions': [instr.model_dump(mode='json') for instr in self.instructions],
+            'commands': [instr.model_dump(mode='json') for instr in self.commands],
         }

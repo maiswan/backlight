@@ -1,32 +1,55 @@
 {
     "led_count": 144,
-    "led_order": "GRB",
+    "pixel_order": "GRB",
     "gpio_pin": 18,
-    "fps": 30,
-    "instructions": [
+    "fps": 2,
+    "commands": [
         {
-            "identifier": "color_static_kelvin",
-            "id": "4f3c34c8-b7ea-4dfb-a300-9ed1b794fc59",
+            "mode": "color_static_kelvin",
+            "id": "5826370a-78d7-473e-a95c-d718a11ec0ba",
+            "name": "csk",
             "z_index": 0,
-            "targets": null,
+            "targets": "",
             "is_enabled": true,
-            "kelvin": 4500
+            "kelvin": 3500
         },
         {
-            "identifier": "alpha_static",
-            "id": "d4dcd3ef-1a82-4317-aefc-f769768d8fff",
+            "mode": "alpha_pulse",
+            "id": "33fe08cc-f725-451e-b9e0-f0c8aa301170",
+            "name": "apt",
             "z_index": 10,
-            "targets": null,
+            "targets": "0-71",
             "is_enabled": true,
-            "alpha": 0.3
+            "alpha_max": 1.0,
+            "alpha_min": 0.1,
+            "period": 5000
         },
         {
-            "identifier": "gamma_static",
-            "id": "d4dcd3ef-1a82-4317-aefc-f769768d8a9a",
+            "mode": "alpha_static",
+            "id": "565b060d-9493-4e4e-a39f-8a2e247139dd",
+            "name": "asb",
+            "z_index": 11,
+            "targets": "72-143",
+            "is_enabled": true,
+            "alpha": 0.1
+        },
+        {
+            "mode": "gamma_static",
+            "id": "419c74af-8ce9-4de9-a505-40c5b93e3356",
+            "name": "gst",
             "z_index": 20,
-            "targets": null,
+            "targets": "0-71",
             "is_enabled": true,
             "gamma": 2.4
+        },
+        {
+            "mode": "gamma_static",
+            "id": "cdd87bce-9641-4cb8-9254-a12fab4d091d",
+            "name": "gsb",
+            "z_index": 20,
+            "targets": "72-143",
+            "is_enabled": true,
+            "gamma": 1.6
         }
     ]
 }
