@@ -4,7 +4,7 @@ Backlight is a FastAPI-based LED controller for WS2812B strips. It is designed f
 
 ## Features
 
-* Multiple built-in instructions (colors, brightness, gamma correction, animations...)
+* Multiple built-in commands (colors, brightness, gamma correction, animations...)
 * Individual LED addressable
 * Highly configurable from
     * JSON config file
@@ -34,18 +34,34 @@ chmod 755 backlight.sh
 
 ## Configurations
 
-All configurations are stored in `config.json`. Backlight saves the currently executing LED instructions when it exits and applies them automatically on startup.
+All configurations are stored in `config.json`. Backlight saves the currently executing LED commands when it exits and applies them automatically on startup.
 
 Backlight also offers remote control through a HTTP API. The routes are as follows:
 
 | Request | Path | Functionality |
 |---------|------|---------------|
 | `GET` | `/dashboard` | Dashboard and controller &mdash; requires [maiswan/backlight-dashboard](https://github.com/maiswan/backlight-dashboard) |
-| `GET` | `/api/v1/config` | Get the current configurations and instructions |
-| `GET` | `/api/v1/config/stream` | Get the current configurations and instructions via [SSE](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) |
-| `GET` | `/api/v1/instructions` | Get the current instructions |
-| `POST` | `/api/v1/instructions` | Create a new instruction |
-| `PUT` | `/api/v1/instructions` | Replace all existing instructions with the payload |
-| `DELETE` | `/api/v1/instructions` | Delete all existing instructions |
-| `PUT` | `/api/v1/instructions/{id}` | Modify an existing instruction |
-| `DELETE` | `/api/v1/instructions/{id}` | Delete an existing instruction |
+| `GET` | `/api/v2/commands` | Get the current commands |
+| `POST` | `/api/v2/commands` | Create a new command |
+| `PUT` | `/api/v2/commands` | Replace all existing commands with the payload |
+| `DELETE` | `/api/v2/commands` | Delete all existing commands |
+| `PUT` | `/api/v2/commands/{id_or_name}` | Modify an existing command |
+| `DELETE` | `/api/v2/commands/{id_or_name}` | Delete an existing command |
+| `GET` | `/api/v2/config` | Get the current configurations and commands |
+| `GET` | `/api/v2/config/stream` | Get the current configurations and commands via [SSE](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) |
+
+There are two endpoints for each of `led_count`, `pixel_order`, `gpio_pin` and `fps`.
+
+    GET /api/v2/config/{x}
+    PUT /api/v2/config/{x}
+
+When sending a PUT request, enclose the value in a JSON object:
+
+```
+PUT /api/v2/config/fps
+```
+```json
+{
+    "value": 60
+}
+```
