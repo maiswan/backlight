@@ -9,35 +9,44 @@ from neopixel import NeoPixel
 
 class State:
     config: Config
+    config_path: str = ""
     current_red: list[float] = []
     current_green: list[float] = []
     current_blue: list[float] = []
-    config_path: str = ""
     render_task: Task
+    is_rendering: bool = False
     stop_event = Event()
     pixels: NeoPixel
 
+    def initialize_render_task(self):
+        if (self.is_rendering):
+            return
+        
+        self.render_task = asyncio.create_task(self.render_loop())
+        
     async def render_loop(self):
-        while not self.stop_event.is_set():
+        self.is_rendering = True
+        while True:
             now = time.monotonic()
             self.current_red = [0] * self.config.led_count
             self.current_green = [0] * self.config.led_count
             self.current_blue = [0] * self.config.led_count
 
-            self.config.instructions.sort(key=lambda x: x.z_index)
-            for instruction in self.config.instructions:
-                instruction.execute(self.current_red, self.current_green, self.current_blue, self.config.led_count, now)
+            is_static = True
+            self.config.commands.sort(key=lambda x: x.z_index)
+            for command in self.config.commands:
+                is_static = is_static and command.is_static
+                command.execute(self.current_red, self.current_green, self.current_blue, self.config.led_count, now)
             
             self.redraw()
-            await asyncio.sleep(1 / self.config.fps)
 
-    def to_dict(self):
-        return {
-            'config': self.config.model_dump(),
-            'current_red': self.current_red,
-            'current_green': self.current_green,
-            'current_blue': self.current_blue,
-        }
+            # all commands are static, no need to rerender
+            if (is_static or self.stop_event.is_set()):
+                self.is_rendering = False
+                self.render_task = None
+                break
+
+            await asyncio.sleep(1 / self.config.fps)
 
     def redraw(self, index: int | None = None):
         if (index is None):
@@ -69,23 +78,26 @@ class State:
 
         self.config = Config(
             led_count=read['led_count'],
-            led_order=read['led_order'],
+            pixel_order=read['pixel_order'],
             gpio_pin=read['gpio_pin'],
             fps=read['fps'],
-            instructions=read['instructions'],
+            commands=read['commands'],
         )
 
+        self.initialize_pixels()
+        self.initialize_render_task()
+
+        self.pixels.brightness = 1.0
+
+    def initialize_pixels(self):
         self.pixels = NeoPixel(
             Pin(self.config.gpio_pin),
             self.config.led_count,
             auto_write=False,
-            pixel_order=self.config.led_order,
+            pixel_order=self.config.pixel_order,
         )
 
-        self.render_task = asyncio.create_task(self.render_loop())
-        self.pixels.brightness = 1.0
-
-    async def deconstruct(self):
+    async def deconstruct(self):            
         # Turn off LEDs
         self.pixels.brightness = 0.0
         self.pixels.show()
