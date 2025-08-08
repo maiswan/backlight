@@ -6,6 +6,7 @@ import time
 from .config import Config
 from microcontroller import Pin
 from neopixel import NeoPixel
+import RPi.GPIO as GPIO
 
 class State:
     config: Config
@@ -13,7 +14,8 @@ class State:
     current_red: list[float] = []
     current_green: list[float] = []
     current_blue: list[float] = []
-    render_task: Task
+    render_task: Task | None
+    force_rerender_task: Task | None
     is_rendering: bool = False
     stop_event = Event()
     pixels: NeoPixel
@@ -23,6 +25,9 @@ class State:
             return
         
         self.render_task = asyncio.create_task(self.render_loop())
+
+    def initialize_force_render_task(self):
+        self.force_rerender_task = asyncio.create_task(self.force_rerender_gpio_loop())
         
     async def render_loop(self):
         self.is_rendering = True
@@ -35,18 +40,25 @@ class State:
             is_static = True
             self.config.commands.sort(key=lambda x: x.z_index)
             for command in self.config.commands:
+                if (not command.is_enabled):
+                    continue
+
                 is_static = is_static and command.is_static
-                command.execute(self.current_red, self.current_green, self.current_blue, self.config.led_count, now)
+                try:
+                    command.execute(self.current_red, self.current_green, self.current_blue, self.config.led_count, now)
+                except Exception as exception:
+                    print(exception)
             
             self.redraw()
 
             # all commands are static, no need to rerender
-            if (is_static or self.stop_event.is_set()):
+            if (is_static and self.config.fps_all_static_commands == 0) or (self.stop_event.is_set()):
                 self.is_rendering = False
                 self.render_task = None
                 break
 
-            await asyncio.sleep(1 / self.config.fps)
+            fps = self.config.fps_all_static_commands if is_static else self.config.fps
+            await asyncio.sleep(1 / fps)
 
     def redraw(self, index: int | None = None):
         if (index is None):
@@ -60,7 +72,8 @@ class State:
 
     def _get_config_path(self):
         CONFIG_PATHS = [
-            'config.private.json',
+            'config.dev.json',
+            'config.prod.json',
             'config.json'
         ]
 
@@ -81,13 +94,29 @@ class State:
             pixel_order=read['pixel_order'],
             gpio_pin=read['gpio_pin'],
             fps=read['fps'],
+            fps_all_static_commands=read['fps_all_static_commands'],
+            force_rerender_gpio_pin=read['force_rerender_gpio_pin'],
             commands=read['commands'],
         )
 
         self.initialize_pixels()
         self.initialize_render_task()
+        self.initialize_force_render_task()
 
         self.pixels.brightness = 1.0
+
+    async def force_rerender_gpio_loop(self):
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(self.config.force_rerender_gpio_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        prev = 0
+        
+        while not self.stop_event.is_set():
+            current = GPIO.input(self.config.force_rerender_gpio_pin)
+            if (prev != current and current == GPIO.HIGH):
+                self.initialize_render_task()
+
+            prev = current
+            await asyncio.sleep(1)
 
     def initialize_pixels(self):
         self.pixels = NeoPixel(
@@ -97,17 +126,23 @@ class State:
             pixel_order=self.config.pixel_order,
         )
 
+    def write_config(self):
+        with open(self.config_path, 'w') as f:
+            json.dump(self.config.to_dict(), f, indent=4)
+
     async def deconstruct(self):            
         # Turn off LEDs
         self.pixels.brightness = 0.0
         self.pixels.show()
 
         self.stop_event.set()
-        await self.render_task
+        if (self.render_task is not None):
+            await self.render_task
+        if (self.force_rerender_task is not None):
+            await self.force_rerender_task
 
-        # Write config
-        with open(self.config_path, 'w') as f:
-            json.dump(self.config.to_dict(), f, indent=4)
+        self.write_config()
+
 
 # Singleton instance
 state: State = State()
