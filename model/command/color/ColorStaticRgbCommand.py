@@ -1,12 +1,13 @@
 from typing import Iterable, List, Literal
 from pydantic import Field
-from model.instruction.instruction import InstructionBase
+from model.command.command import CommandBase
 
-class ColorStaticRgbInstruction(InstructionBase):
-    identifier: Literal["color_static_rgb"] = "color_static_rgb"
+class ColorStaticRgbCommand(CommandBase):
+    mode: Literal["color_static_rgb"] = "color_static_rgb"
     red: int = Field(..., ge=0, le=255)
     green: int = Field(..., ge=0, le=255)
     blue: int = Field(..., ge=0, le=255)
+    is_static = True
 
     def _compute(self, current_red: List[float], current_green: List[float], current_blue: List[float], targets: Iterable[int], time: float):
         for i in targets:

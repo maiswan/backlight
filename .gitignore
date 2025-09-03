@@ -1,5 +1,7 @@
 # Private config
 config.private.json
+config.prod.json
+config.dev.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
