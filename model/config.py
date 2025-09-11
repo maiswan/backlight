@@ -4,10 +4,10 @@ from pydantic import BaseModel, Field
 
 from model.command.alpha import AlphaCommandUnion
 from model.command.color import ColorCommandUnion
-from model.command.gamma import GammaCommandUnion
+from model.command.correction import CorrectionCommandUnion
 
 commandUnion = Annotated[
-    Union[AlphaCommandUnion, ColorCommandUnion, GammaCommandUnion],
+    Union[AlphaCommandUnion, ColorCommandUnion, CorrectionCommandUnion],
     Field(discriminator="mode")
 ]
 

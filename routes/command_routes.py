@@ -3,13 +3,13 @@ from fastapi import APIRouter, Body, HTTPException
 from pydantic import Field
 from model.command.alpha import AlphaCommandUnion
 from model.command.color import ColorCommandUnion
-from model.command.gamma import GammaCommandUnion
+from model.command.correction import CorrectionCommandUnion
 from model.state import state
 
 router = APIRouter()
 
 commandUnion = Annotated[
-    Union[AlphaCommandUnion, ColorCommandUnion, GammaCommandUnion],
+    Union[AlphaCommandUnion, ColorCommandUnion, CorrectionCommandUnion],
     Field(discriminator="mode")
 ]
 
