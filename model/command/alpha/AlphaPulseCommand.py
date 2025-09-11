@@ -6,7 +6,7 @@ from model.command.command import CommandBase
 
 class AlphaPulseCommand(CommandBase):
     mode: Literal["alpha_pulse"] = "alpha_pulse"
-    period: int = Field(..., ge=1000)
+    period: float = Field(..., ge=1000)
     alpha_min: float = Field(..., ge=0.0, le=1.0)
     alpha_max: float = Field(..., ge=0.0, le=1.0)
     is_static = False

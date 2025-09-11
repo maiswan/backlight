@@ -5,7 +5,7 @@ from utilities.hsv2rgb import hsv2rgb
 
 class ColorRainbowCommand(CommandBase):
     mode: Literal["color_rainbow"] = "color_rainbow"
-    period: int = Field(..., ge=1000)
+    period: float = Field(..., ge=1000)
     saturation: float = Field(..., ge=0.0, le=1.0)
     is_static = False
 

@@ -1,14 +1,12 @@
-import asyncio
 import math
-import time
-from typing import Callable, Iterable, List, Literal, ClassVar, Optional
+from typing import Iterable, List, Literal
 
 from pydantic import Field, model_validator
 from model.command.command import CommandBase
 
 class AlphaRollingCommand(CommandBase):
     mode: Literal["alpha_rolling"] = "alpha_rolling"
-    period: int = Field(..., ge=1000)
+    period: float = Field(..., ge=1000)
     maximas: float = Field(..., ge=0.01)
     alpha_min: float = Field(..., ge=0.0, le=1.0)
     alpha_max: float = Field(..., ge=0.0, le=1.0)

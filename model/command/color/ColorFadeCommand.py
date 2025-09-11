@@ -8,10 +8,10 @@ from model.command.command import CommandBase
 
 class ColorFadeCommand(CommandBase):
     mode: Literal["color_fade"] = "color_fade"
-    period: int = Field(..., ge=0)
-    red: int = Field(..., ge=0, le=255)
-    green: int = Field(..., ge=0, le=255)
-    blue: int = Field(..., ge=0, le=255)
+    period: float = Field(..., ge=0)
+    red: float = Field(..., ge=0, le=255)
+    green: float = Field(..., ge=0, le=255)
+    blue: float = Field(..., ge=0, le=255)
     _start_red: list[float] = []
     _start_green: list[float] = []
     _start_blue: list[float] = []

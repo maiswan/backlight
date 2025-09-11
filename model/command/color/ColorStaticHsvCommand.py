@@ -5,7 +5,7 @@ from utilities.hsv2rgb import hsv2rgb
 
 class ColorStaticHsvCommand(CommandBase):
     mode: Literal["color_static_hsv"] = "color_static_hsv"
-    hue: int = Field(..., ge=0, le=360)
+    hue: float = Field(..., ge=0, le=360)
     saturation: float = Field(..., ge=0, le=1)
     value: float = Field(..., ge=0, le=1)
     is_static = True
