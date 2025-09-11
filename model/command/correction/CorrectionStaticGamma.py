@@ -2,8 +2,8 @@ from typing import Iterable, List, Literal
 from pydantic import Field
 from model.command.command import CommandBase
 
-class GammaStaticCommand(CommandBase):
-    mode: Literal["gamma_static"] = "gamma_static"
+class CorrectionStaticGammaCommand(CommandBase):
+    mode: Literal["correction_static_gamma"] = "correction_static_gamma"
     gamma: float = Field(..., ge=0.1, le=5.0)
     is_static = True
 
