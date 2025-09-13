@@ -28,23 +28,21 @@ class ColorFadeCommand(CommandBase):
         linear_percentage = min(1.0, (time - self._start_time) / (self.period / 1000))
         eased_percentage = -1 * math.cos(math.pi * linear_percentage) / 2 + 0.5  # Cosine easing
         for i in targets:
-            red, green, blue = self.lerp_rgb(
-                (self._start_red[i], self._start_green[i], self._start_blue[i]),
-                (self.red, self.green, self.blue),
+            red, green, blue = self.lerp(
+                self._start_red[i],
+                self._start_green[i],
+                self._start_blue[i],
+                self.red,
+                self.green,
+                self.blue,
                 eased_percentage
             )
             current_red[i] = red
             current_green[i] = green
             current_blue[i] = blue
 
-        # animation has completed, reset values in case this command is reused
-        # if abs(eased_percentage - 1) < 0.001:
-        #     self._start_red = []
-        #     self._start_green = []
-        #     self._start_blue = []
-        #     self._start_time = 0
-            
-    def lerp_rgb(self, rgb1: tuple[float, float, float], rgb2: tuple[int, int, int], t: float):
-        to_linear = lambda c: (c / 255) ** 2.2
-        to_srgb = lambda c: round((c ** (1 / 2.2)) * 255)
-        return tuple(to_srgb((1 - t) * to_linear(a) + t * to_linear(b)) for a, b in zip(rgb1, rgb2))
+    def lerp(self, r1: float, g1: float, b1: float, r2: float, g2: float, b2: float, t: float):
+        r = (1 - t) * r1 + t * r2
+        g = (1 - t) * g1 + t * g2
+        b = (1 - t) * b1 + t * b2
+        return r, g, b
