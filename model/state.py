@@ -1,4 +1,4 @@
-from asyncio import Event, Task
+from asyncio import Task
 import asyncio
 import json
 import os
@@ -14,23 +14,19 @@ class State:
     current_red: list[float] = []
     current_green: list[float] = []
     current_blue: list[float] = []
-    render_task: Task | None
-    force_rerender_task: Task | None
-    is_rendering: bool = False
-    stop_event = Event()
+    render_task: Task | None = None
+    force_rerender_task: Task | None = None
     pixels: NeoPixel
 
     def initialize_render_task(self):
-        if (self.is_rendering):
-            return
-        
+        if (self.render_task): self.render_task.cancel()        
         self.render_task = asyncio.create_task(self.render_loop())
 
     def initialize_force_render_task(self):
+        if (self.force_rerender_task): self.force_rerender_task.cancel()      
         self.force_rerender_task = asyncio.create_task(self.force_rerender_gpio_loop())
         
     async def render_loop(self):
-        self.is_rendering = True
         while True:
             now = time.monotonic()
             self.current_red = [0] * self.config.led_count
@@ -52,8 +48,7 @@ class State:
             self.redraw()
 
             # all commands are static, no need to rerender
-            if (is_static and self.config.fps_all_static_commands == 0) or (self.stop_event.is_set()):
-                self.is_rendering = False
+            if (is_static and self.config.fps_all_static_commands == 0):
                 self.render_task = None
                 break
 
@@ -110,7 +105,7 @@ class State:
         GPIO.setup(self.config.force_rerender_gpio_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         prev = 0
         
-        while not self.stop_event.is_set():
+        while True:
             current = GPIO.input(self.config.force_rerender_gpio_pin)
             if (prev != current and current == GPIO.HIGH):
                 self.initialize_render_task()
@@ -135,11 +130,8 @@ class State:
         self.pixels.brightness = 0.0
         self.pixels.show()
 
-        self.stop_event.set()
-        if (self.render_task is not None):
-            await self.render_task
-        if (self.force_rerender_task is not None):
-            await self.force_rerender_task
+        if (self.render_task): self.render_task.cancel()
+        if (self.force_rerender_task): self.force_rerender_task.cancel()
 
         self.write_config()
 

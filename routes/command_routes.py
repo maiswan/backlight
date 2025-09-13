@@ -22,7 +22,6 @@ async def get_all():
 @router.post("/")
 async def post(command: commandUnion = Body(...)):
     state.config.commands.append(command)
-    state.initialize_render_task()
     state.write_config()
     return command
 
@@ -30,7 +29,6 @@ async def post(command: commandUnion = Body(...)):
 @router.put("/")
 async def put_all(commands: list[commandUnion] = Body(...)):
     state.config.commands = commands[::]
-    state.initialize_render_task()
     state.write_config()
     return state.config.commands
 
@@ -41,7 +39,6 @@ async def delete_all():
         raise HTTPException(status_code=404, detail="No commands to delete")
 
     state.config.commands = []
-    state.initialize_render_task()
     state.write_config()
     return {"detail": "Deleted"}
 
@@ -61,7 +58,6 @@ async def put_command(id_or_name: str, newCommand: commandUnion = Body(...)):
     for i, command in enumerate(state.config.commands):
         if command.name == id_or_name or command.id == id_or_name:
             state.config.commands[i] = newCommand
-            state.initialize_render_task()
             state.write_config()
             return newCommand
     else:
@@ -77,6 +73,5 @@ async def delete_command(id_or_name: str):
     if before == after:
         raise HTTPException(status_code=404, detail="Command not found")
     
-    state.initialize_render_task()
     state.write_config()
     return {"detail": "Deleted"}
