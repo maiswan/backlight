@@ -29,8 +29,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(config_router, prefix="/api/v2/config", tags=["config"])
-app.include_router(command_router, prefix="/api/v2/commands", tags=["commands"])
+app.include_router(config_router, prefix="/api/v3/config", tags=["config"])
+app.include_router(command_router, prefix="/api/v3/commands", tags=["commands"])
 
 @app.get("/")
 async def root():
