@@ -1,5 +1,5 @@
 from typing import Annotated, Union
-from fastapi import APIRouter, Body, HTTPException
+from fastapi import APIRouter, Body, HTTPException, status
 from pydantic import Field
 from model.command.alpha import AlphaCommandUnion
 from model.command.color import ColorCommandUnion
@@ -19,29 +19,29 @@ async def get_all():
     return state.config.commands
 
 # POST new command
-@router.post("/")
+@router.post("/", status_code=status.HTTP_201_CREATED)
 async def post(command: commandUnion = Body(...)):
     state.config.commands.append(command)
     state.write_config()
+    state.initialize_render_task()
     return command
 
 # PUT new commands and remove existing commands
-@router.put("/")
+@router.put("/", status_code=status.HTTP_204_NO_CONTENT)
 async def put_all(commands: list[commandUnion] = Body(...)):
     state.config.commands = commands[::]
     state.write_config()
-    return state.config.commands
+    state.initialize_render_task()
 
 # DELETE all existing commands
-@router.delete("/")
+@router.delete("/", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_all():
     if len(state.config.commands) == 0:
         raise HTTPException(status_code=404, detail="No commands to delete")
 
     state.config.commands = []
     state.write_config()
-    return {"detail": "Deleted"}
-
+    state.initialize_render_task()
 
 # GET existing command
 @router.get("/{id_or_name}")
@@ -53,18 +53,18 @@ async def get_command(id_or_name: str):
         raise HTTPException(status_code=404, detail="Command not found")
 
 # PUT existing command
-@router.put("/{id_or_name}")
+@router.put("/{id_or_name}", status_code=status.HTTP_204_NO_CONTENT)
 async def put_command(id_or_name: str, newCommand: commandUnion = Body(...)):
     for i, command in enumerate(state.config.commands):
         if command.name == id_or_name or command.id == id_or_name:
             state.config.commands[i] = newCommand
             state.write_config()
-            return newCommand
+            state.initialize_render_task()
     else:
         raise HTTPException(status_code=404, detail="Command not found")
         
 # DELETE existing command
-@router.delete("/{id_or_name}")
+@router.delete("/{id_or_name}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_command(id_or_name: str):
     before = len(state.config.commands)
     state.config.commands = [ x for x in state.config.commands if not (x.name == id_or_name or x.id == id_or_name) ]
@@ -74,4 +74,4 @@ async def delete_command(id_or_name: str):
         raise HTTPException(status_code=404, detail="Command not found")
     
     state.write_config()
-    return {"detail": "Deleted"}
+    state.initialize_render_task()
