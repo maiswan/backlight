@@ -11,7 +11,7 @@ router = APIRouter()
 async def get_stream():
     previous = None
     try:
-        while not state.stop_event.is_set():
+        while True:
             now = copy.deepcopy(state.config)
 
             if now != previous:
