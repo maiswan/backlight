@@ -17,15 +17,16 @@ class State:
     render_task: Task | None = None
     force_rerender_task: Task | None = None
     pixels: NeoPixel
+    loop = asyncio.get_event_loop()
 
     def initialize_render_task(self):
         if (self.render_task): self.render_task.cancel()        
-        self.render_task = asyncio.create_task(self.render_loop())
+        self.render_task = self.loop.create_task(self.render_loop())
 
     def initialize_force_render_task(self):
         if (self.force_rerender_task): self.force_rerender_task.cancel()      
-        self.force_rerender_task = asyncio.create_task(self.force_rerender_gpio_loop())
-        
+        self.force_rerender_task = self.loop.create_task(self.force_rerender_gpio_loop())
+                
     async def render_loop(self):
         while True:
             now = time.monotonic()
@@ -130,8 +131,12 @@ class State:
         self.pixels.brightness = 0.0
         self.pixels.show()
 
-        if (self.render_task): self.render_task.cancel()
-        if (self.force_rerender_task): self.force_rerender_task.cancel()
+        if (self.render_task): 
+            self.render_task.cancel()
+            await self.render_task
+        if (self.force_rerender_task): 
+            self.force_rerender_task.cancel()
+            await self.force_reredner_task
 
         self.write_config()
 
