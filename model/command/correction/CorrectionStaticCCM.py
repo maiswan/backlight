@@ -13,10 +13,10 @@ class CorrectionStaticCCMCommand(CommandBase):
     m31: float = Field(..., ge=-1.0, le=1.0)
     m32: float = Field(..., ge=-1.0, le=1.0)
     m33: float = Field(..., ge=-1.0, le=1.0)
-
-    m14: float = Field(..., ge=-1.0, le=1.0)
-    m24: float = Field(..., ge=-1.0, le=1.0)
-    m34: float = Field(..., ge=-1.0, le=1.0)
+    bias_red: float = Field(..., ge=-255.0, le=255.0)
+    bias_green: float = Field(..., ge=-255.0, le=255.0)
+    bias_blue: float = Field(..., ge=-255.0, le=255.0)
+    
     is_static = True
 
     def _compute(self, current_red: List[float], current_green: List[float], current_blue: List[float], targets: Iterable[int], time: float):
@@ -26,9 +26,9 @@ class CorrectionStaticCCMCommand(CommandBase):
             old_blue = current_blue[i]
 
             # Matrix multiplication with bias
-            red = self.m11 * old_red + self.m12 * old_green + self.m13 * old_blue + self.m14
-            green = self.m21 * old_red + self.m22 * old_green + self.m23 * old_blue + self.m24
-            blue = self.m31 * old_red + self.m32 * old_green + self.m33 * old_blue + self.m34
+            red = self.m11 * old_red + self.m12 * old_green + self.m13 * old_blue + self.bias_red
+            green = self.m21 * old_red + self.m22 * old_green + self.m23 * old_blue + self.bias_green
+            blue = self.m31 * old_red + self.m32 * old_green + self.m33 * old_blue + self.bias_blue
             
             # Clamp
             red = self._clamp(red)
