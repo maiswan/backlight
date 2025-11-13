@@ -136,7 +136,7 @@ class State:
             await self.render_task
         if (self.force_rerender_task): 
             self.force_rerender_task.cancel()
-            await self.force_reredner_task
+            await self.force_rerender_task
 
         self.write_config()
 
