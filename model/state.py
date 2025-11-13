@@ -56,14 +56,18 @@ class State:
             fps = self.config.fps_all_static_commands if is_static else self.config.fps
             await asyncio.sleep(1 / fps)
 
+    def toRgbwTuple(self, red: int, green: int, blue: int):
+        white = min(red, green, blue)
+        return (red - white, green - white, blue - white, white)
+
     def redraw(self, index: int | None = None):
-        if (index is None):
-            for i in range(self.config.led_count):
-                self.pixels[i] = (self.current_red[i], self.current_green[i], self.current_blue[i])
-            self.pixels.show()
-            return
-        
-        self.pixels[index] = (self.current_red[index], self.current_green[index], self.current_blue[index])
+        need_rgbw_conversion = "W" in self.config.pixel_order
+
+        output_range = range(self.config.led_count) if index is None else range(index, index + 1)
+
+        for i in output_range:
+            pixel_tuple = self.toRgbwTuple(self.current_red[i], self.current_green[i], self.current_blue[i]) if need_rgbw_conversion else (self.current_red[i], self.current_green[i], self.current_blue[i])
+            self.pixels[i] = pixel_tuple
         self.pixels.show()
 
     def _get_config_path(self):
