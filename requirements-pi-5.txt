@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+adafruit-circuitpython-neopixel-spi
+adafruit-blinka
+lgpio
+pydantic

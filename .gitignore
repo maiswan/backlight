@@ -3,6 +3,10 @@ config.private.json
 config.prod.json
 config.dev.json
 
+# Pi 5 library
+lg/
+lg.zip
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

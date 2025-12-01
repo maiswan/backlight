@@ -4,9 +4,6 @@ import json
 import os
 import time
 from .config import Config
-from microcontroller import Pin
-from neopixel import NeoPixel
-import RPi.GPIO as GPIO
 
 class State:
     config: Config
@@ -16,8 +13,8 @@ class State:
     current_blue: list[float] = []
     render_task: Task | None = None
     force_rerender_task: Task | None = None
-    pixels: NeoPixel
     loop = asyncio.get_event_loop()
+    pixels: any
 
     def initialize_render_task(self):
         if (self.render_task): self.render_task.cancel()        
@@ -92,6 +89,7 @@ class State:
         self.config = Config(
             led_count=read['led_count'],
             pixel_order=read['pixel_order'],
+            use_spi=read['use_spi'],
             gpio_pin=read['gpio_pin'],
             fps=read['fps'],
             fps_all_static_commands=read['fps_all_static_commands'],
@@ -106,24 +104,34 @@ class State:
         self.pixels.brightness = 1.0
 
     async def force_rerender_gpio_loop(self):
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.config.force_rerender_gpio_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-        prev = 0
-        
-        while True:
-            current = GPIO.input(self.config.force_rerender_gpio_pin)
-            if (prev != current and current == GPIO.HIGH):
-                self.initialize_render_task()
-
-            prev = current
-            await asyncio.sleep(1)
+        pass
+        # GPIO.setmode(GPIO.BCM)
+        # GPIO.setup(self.config.force_rerender_gpio_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        # prev = 0
+        # 
+        # while True:
+        #     current = GPIO.input(self.config.force_rerender_gpio_pin)
+        #     if (prev != current and current == GPIO.HIGH):
+        #         self.initialize_render_task()
+# 
+        #     prev = current
+        #     await asyncio.sleep(1)
 
     def initialize_pixels(self):
-        self.pixels = NeoPixel(
-            Pin(self.config.gpio_pin),
+        if (self.config.use_spi):
+            from .pixels.spi import NeoPixelSPI
+            self.pixels = NeoPixelSPI(
+                self.config.gpio_pin,
+                self.config.led_count,
+                self.config.pixel_order,
+            )
+            return
+            
+        from .pixels.gpio import NeoPixelGPIO
+        self.pixels = NeoPixelGPIO(
+            self.config.gpio_pin,
             self.config.led_count,
-            auto_write=False,
-            pixel_order=self.config.pixel_order,
+            self.config.pixel_order,
         )
 
     def write_config(self):

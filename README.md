@@ -12,21 +12,50 @@ Backlight is a FastAPI-based LED controller for WS2812B strips. It is designed f
 * React frontend at [maiswan/backlight-dashboard](https://github.com/maiswan/backlight-dashboard)
 
 ## Setup
-1. Initialize a Python virtual environment
+### 1. Initialize a Python virtual environment
 ```bash
 sudo apt-get install python3-dev # install globally
 python -m venv .venv
 source .venv/bin/activate
 ```
 
-2. Install packages
+### 2a. Install packages (For everything OTHER than Pi 5)
+> [!WARNING]
+> If you have a Pi 5, proceed to step 2b instead.
+
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Modify `config.json` as needed
+### 2b. Install packages (For Pi 5 ONLY)
+> [!WARNING]
+> Follow these steps only if you have a Pi 5. Otherwise, return to step 2a.
 
-4. Run (`sudo` as needed)
+```bash
+# https://gordonlesti.com/light-up-ws2811-leds-with-a-raspberry-pi-5-via-spi/
+sudo raspi-config
+```
+Select _3 Interface Options_, then _I4 SPI_, then _Yes_.
+
+```bash
+# https://abyz.me.uk/lg/download.html
+sudo apt install swig
+sudo apt install python-setuptools python3-setuptools
+wget http://abyz.me.uk/lg/lg.zip
+unzip lg.zip
+cd lg
+make
+sudo make install
+cd ..
+pip install -r requirements-pi-5.txt
+```
+
+On a Pi 5, the LED data line must be connected to a SPI pin (e.g., GPIO10), which means you will need to change `gpio_pin` to `10` in `config.json`, and wire accordingly.
+
+### 3. Final touches
+Modify `config.json` as needed.
+
+Run (`sudo` as needed).
 ```bash
 chmod 755 backlight.sh 
 ./backlight.sh
@@ -34,7 +63,7 @@ chmod 755 backlight.sh
 
 ## Configurations
 
-All configurations are stored in `config.json`. Backlight saves the currently executing LED commands when it exits and applies them automatically on startup.
+All configurations are inside `config.json`. Backlight saves the currently executing LED commands when it exits and re-applies them automatically on startup.
 
 Backlight also offers remote control through a HTTP API. The routes are as follows:
 

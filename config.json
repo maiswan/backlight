@@ -1,75 +1,38 @@
 {
     "led_count": 144,
-    "pixel_order": "GRB",
-    "gpio_pin": 18,
-    "fps": 1,
+    "pixel_order": "GRBW",
+    "use_spi": true,
+    "gpio_pin": 10,
+    "fps": 4,
     "fps_all_static_commands": 0,
     "force_rerender_gpio_pin": 4,
     "commands": [
         {
             "mode": "color_static_kelvin",
-            "id": "5826370a-78d7-473e-a95c-d718a11ec0ba",
-            "name": "Kelvin",
+            "id": "4391ac84-1d16-4455-bb09-c531e91177a9",
+            "name": "",
+            "z_index": 0,
+            "targets": "0-90",
+            "is_enabled": true,
+            "kelvin": 6000.0
+        },
+        {
+            "mode": "alpha_static",
+            "id": "0a921be0-54b7-4e4f-a770-0e59b3279bc2",
+            "name": "",
             "z_index": 0,
             "targets": "",
             "is_enabled": true,
-            "kelvin": 4000
+            "alpha": 1.0
         },
         {
-            "mode": "color_static_hsv",
-            "id": "57e08bcf-7023-4ce2-b775-295a9faae281",
-            "name": "\u7121\u9650\u306e\u65c5\u3001\u50d5\u3089\u306e\u9078\u629e",
-            "z_index": 10,
-            "targets": "",
-            "is_enabled": false,
-            "hue": 130,
-            "saturation": 0.4,
-            "value": 0.75
-        },
-        {
-            "mode": "gamma_static",
-            "id": "419c74af-8ce9-4de9-a505-40c5b93e3356",
-            "name": "Top \u03b3=2.4",
-            "z_index": 20,
-            "targets": "0-71",
-            "is_enabled": true,
-            "gamma": 2.4
-        },
-        {
-            "mode": "alpha_static",
-            "id": "c24b10a2-2121-4778-8701-fe3599dcb6f5",
-            "name": "Top \u03b1=0.4",
-            "z_index": 30,
-            "targets": "0-71",
-            "is_enabled": true,
-            "alpha": 0.4
-        },
-        {
-            "mode": "gamma_static",
-            "id": "cdd87bce-9641-4cb8-9254-a12fab4d091d",
-            "name": "Bottom \u03b3=2.0",
-            "z_index": 40,
-            "targets": "72-143",
-            "is_enabled": true,
-            "gamma": 2.0
-        },
-        {
-            "mode": "alpha_static",
-            "id": "c24b10a2-2121-4778-8701-fe3599dcb6f6",
-            "name": "Bottom \u03b1=0.05",
-            "z_index": 50,
-            "targets": "72-143",
-            "is_enabled": true,
-            "alpha": 0.05
-        },
-        {
-            "mode": "alpha_static",
-            "id": "69da8cd0-56b6-4b64-ac86-b8374326b716",
-            "name": "global alpha",
-            "z_index": 60,
+            "mode": "correction_static_gamma",
+            "id": "236e5eb6-6e6e-4b49-99fc-d32825ae8bd4",
+            "name": "",
+            "z_index": 0,
             "targets": "",
             "is_enabled": true,
-            "alpha": 0.1
+            "gamma": 2.2
         }
     ]
 }
