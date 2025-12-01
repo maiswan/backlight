@@ -3,6 +3,7 @@ import asyncio
 import json
 import os
 import time
+from pixels.pixel_base import PixelBase
 from .config import Config
 
 class State:
@@ -14,7 +15,7 @@ class State:
     render_task: Task | None = None
     force_rerender_task: Task | None = None
     loop = asyncio.get_event_loop()
-    pixels: any
+    pixels: PixelBase
 
     def initialize_render_task(self):
         if (self.render_task): self.render_task.cancel()        

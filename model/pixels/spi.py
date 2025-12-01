@@ -1,7 +1,8 @@
 from board import SPI
 from neopixel_spi import NeoPixel_SPI
+from .pixel_base import PixelBase
 
-class NeoPixelSPI:
+class NeoPixelSPI(PixelBase):
 
     spi = SPI()
     _pixels: NeoPixel_SPI
