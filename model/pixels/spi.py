@@ -4,7 +4,7 @@ from .pixel_base import PixelBase
 
 class NeoPixelSPI(PixelBase):
 
-    spi = SPI()
+    _spi: SPI
     _pixels: NeoPixel_SPI
 
     @property
@@ -26,8 +26,9 @@ class NeoPixelSPI(PixelBase):
         self._pixels.brightness = value
 
     def __init__(self, pin: int, count: int, pixel_order: str):
+        self._spi = SPI()
         self._pixels = NeoPixel_SPI(
-            self.spi,
+            self._spi,
             count,
             pixel_order=pixel_order,
             auto_write=False
