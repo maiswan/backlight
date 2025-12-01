@@ -3,7 +3,7 @@ import asyncio
 import json
 import os
 import time
-from pixels.pixel_base import PixelBase
+from .pixels.pixel_base import PixelBase
 from .config import Config
 
 class State:
@@ -13,17 +13,12 @@ class State:
     current_green: list[float] = []
     current_blue: list[float] = []
     render_task: Task | None = None
-    force_rerender_task: Task | None = None
     loop = asyncio.get_event_loop()
     pixels: PixelBase
 
     def initialize_render_task(self):
         if (self.render_task): self.render_task.cancel()        
         self.render_task = self.loop.create_task(self.render_loop())
-
-    def initialize_force_render_task(self):
-        if (self.force_rerender_task): self.force_rerender_task.cancel()      
-        self.force_rerender_task = self.loop.create_task(self.force_rerender_gpio_loop())
                 
     async def render_loop(self):
         while True:
@@ -94,29 +89,13 @@ class State:
             gpio_pin=read['gpio_pin'],
             fps=read['fps'],
             fps_all_static_commands=read['fps_all_static_commands'],
-            force_rerender_gpio_pin=read['force_rerender_gpio_pin'],
             commands=read['commands'],
         )
 
         self.initialize_pixels()
         self.initialize_render_task()
-        self.initialize_force_render_task()
 
         self.pixels.brightness = 1.0
-
-    async def force_rerender_gpio_loop(self):
-        pass
-        # GPIO.setmode(GPIO.BCM)
-        # GPIO.setup(self.config.force_rerender_gpio_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-        # prev = 0
-        # 
-        # while True:
-        #     current = GPIO.input(self.config.force_rerender_gpio_pin)
-        #     if (prev != current and current == GPIO.HIGH):
-        #         self.initialize_render_task()
-# 
-        #     prev = current
-        #     await asyncio.sleep(1)
 
     def initialize_pixels(self):
         if (self.config.use_spi):
@@ -147,9 +126,6 @@ class State:
         if (self.render_task): 
             self.render_task.cancel()
             await self.render_task
-        if (self.force_rerender_task): 
-            self.force_rerender_task.cancel()
-            await self.force_rerender_task
 
         self.write_config()
 
