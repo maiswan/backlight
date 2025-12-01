@@ -1,15 +1,15 @@
 {
     "led_count": 144,
     "pixel_order": "GRBW",
-    "use_spi": true,
-    "gpio_pin": 10,
+    "use_spi": false,
+    "gpio_pin": 18,
     "fps": 4,
     "fps_all_static_commands": 0,
     "force_rerender_gpio_pin": 4,
     "commands": [
         {
             "mode": "color_static_kelvin",
-            "id": "4391ac84-1d16-4455-bb09-c531e91177a9",
+            "id": "3d6ddaa6-2901-452c-ab92-71dc855ad08b",
             "name": "",
             "z_index": 0,
             "targets": "0-90",
@@ -18,7 +18,7 @@
         },
         {
             "mode": "alpha_static",
-            "id": "0a921be0-54b7-4e4f-a770-0e59b3279bc2",
+            "id": "9cf0516d-5039-4927-879f-92c3108dc6dc",
             "name": "",
             "z_index": 0,
             "targets": "",
@@ -27,7 +27,7 @@
         },
         {
             "mode": "correction_static_gamma",
-            "id": "236e5eb6-6e6e-4b49-99fc-d32825ae8bd4",
+            "id": "4e5dcd75-ec47-4d18-822b-c13f414d4038",
             "name": "",
             "z_index": 0,
             "targets": "",

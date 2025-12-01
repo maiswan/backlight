@@ -24,11 +24,11 @@ class NeoPixelGPIO:
         self._pixels.brightness = value
 
     def __init__(self, pin: int, count: int, pixel_order: str):
-        self.pixels = NeoPixel(
-            Pin(self.config.gpio_pin),
-            self.config.led_count,
+        self._pixels = NeoPixel(
+            Pin(pin),
+            count,
             auto_write=False,
-            pixel_order=self.config.pixel_order,
+            pixel_order=pixel_order,
         )
 
     def show(self):

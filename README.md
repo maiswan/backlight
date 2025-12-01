@@ -1,6 +1,6 @@
 ## backlight
 
-Backlight is a FastAPI-based LED controller for WS2812B strips. It is designed for Raspberry Pi but should work on other platforms as adjusted.
+Backlight is a FastAPI-based LED controller for WS2812B strips for Raspberry Pi. This controller targets Pi 4 and 5, but should have some degree of backward compability
 
 ## Features
 
@@ -50,7 +50,9 @@ cd ..
 pip install -r requirements-pi-5.txt
 ```
 
-On a Pi 5, the LED data line must be connected to a SPI pin (e.g., GPIO10), which means you will need to change `gpio_pin` to `10` in `config.json`, and wire accordingly.
+On a Pi 5, the LED data line must be connected to a SPI pin (e.g., GPIO10), which means you will need to change `config.json`:
+* set `gpio_pin` to `10`
+* set `use_spi` to `true`
 
 ### 3. Final touches
 Modify `config.json` as needed.
