@@ -1,38 +1,59 @@
 {
     "led_count": 144,
     "pixel_order": "GRBW",
-    "use_spi": false,
-    "gpio_pin": 18,
+    "use_spi": true,
+    "spi_resend_count": 5,
+    "gpio_pin": 10,
     "fps": 4,
     "fps_all_static_commands": 0,
-    "force_rerender_gpio_pin": 4,
     "commands": [
         {
-            "mode": "color_static_kelvin",
-            "id": "3d6ddaa6-2901-452c-ab92-71dc855ad08b",
-            "name": "",
+            "mode": "source_rgb",
+            "id": "123",
+            "name": "Red",
             "z_index": 0,
-            "targets": "0-90",
+            "alpha": 1.0,
+            "targets": "0-91",
             "is_enabled": true,
-            "kelvin": 6000.0
+            "red": 255.0,
+            "green": 0.0,
+            "blue": 0.0
         },
         {
-            "mode": "alpha_static",
-            "id": "9cf0516d-5039-4927-879f-92c3108dc6dc",
-            "name": "",
+            "mode": "source_rgb",
+            "id": "1234",
+            "name": "Green",
             "z_index": 0,
-            "targets": "",
+            "alpha": 0.25,
+            "targets": "23-45",
             "is_enabled": true,
-            "alpha": 1.0
+            "red": 0.0,
+            "green": 255.0,
+            "blue": 0.0
         },
         {
-            "mode": "correction_static_gamma",
-            "id": "4e5dcd75-ec47-4d18-822b-c13f414d4038",
-            "name": "",
+            "mode": "source_rgb",
+            "id": "12345",
+            "name": "Green",
             "z_index": 0,
-            "targets": "",
+            "alpha": 0.5,
+            "targets": "46-68",
             "is_enabled": true,
-            "gamma": 2.2
+            "red": 0.0,
+            "green": 255.0,
+            "blue": 0.0
+        },
+        {
+            "mode": "source_rgb",
+            "id": "12346",
+            "name": "Green",
+            "z_index": 0,
+            "alpha": 0.75,
+            "targets": "69-91",
+            "is_enabled": true,
+            "red": 0.0,
+            "green": 255.0,
+            "blue": 0.0
         }
     ]
 }
