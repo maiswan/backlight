@@ -70,7 +70,6 @@ class State:
             pixel = self.toRgbwTuple(self.buffer[i]) if need_rgbw_conversion else self.buffer[i]
             self.pixels[i] = pixel
         self.pixels.show()
-        print("Redraw")
 
     def _get_config_path(self):
         CONFIG_PATHS = [

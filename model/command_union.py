@@ -4,9 +4,10 @@ from pydantic import Field
 from .command.source.command_source_rgb import CommandSourceRgb
 from .command.source.command_source_hsv import CommandSourceHsv
 from .command.source.command_source_kelvin import CommandSourceKelvin
+from .command.source.command_source_rainbow import CommandSourceRainbow
 
 # Discriminated unions
 CommandUnion = Annotated[
-    Union[CommandSourceRgb, CommandSourceHsv, CommandSourceKelvin],
+    Union[CommandSourceRgb, CommandSourceHsv, CommandSourceKelvin, CommandSourceRainbow],
     Field(discriminator="mode")
 ]
