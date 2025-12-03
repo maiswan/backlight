@@ -19,54 +19,45 @@ class State:
         self.render_task = self.loop.create_task(self.render_loop())
                 
     async def render_loop(self):
-        self.config.commands.sort(key=lambda x: x.z_index)
 
-        self.buffer = [(0.0, 0.0, 0.0)] * self.config.led_count
+        while True:
+            now = time.monotonic()
+            is_static = True
+            self.config.commands.sort(key=lambda x: x.z_index)
+            self.buffer = [(0.0, 0.0, 0.0)] * self.config.led_count
+        
+            for command in self.config.commands:
+                if (not command.is_enabled):
+                    continue
 
-        for command in self.config.commands:
-            buffer = [(0.0, 0.0, 0.0)] * self.config.led_count
-            command.execute(buffer, self.config.led_count, 0)
+                is_static = is_static and command.is_static
+                try:
+                    buffer = [(0.0, 0.0, 0.0)] * self.config.led_count
+                    command.execute(buffer, self.config.led_count, now)
 
-            # lerp between layers
-            for index in command.get_targets(self.config.led_count):
-                r1, g1, b1 = self.buffer[index]
-                r2, g2, b2 = buffer[index]
-                a = command.alpha
+                    # lerp between layers
+                    for index in command.get_targets(self.config.led_count):
+                        r1, g1, b1 = self.buffer[index]
+                        r2, g2, b2 = buffer[index]
+                        a = command.alpha
 
-                r = r1 * (1 - a) + r2 * a
-                g = g1 * (1 - a) + g2 * a
-                b = b1 * (1 - a) + b2 * a
+                        r = r1 * (1 - a) + r2 * a
+                        g = g1 * (1 - a) + g2 * a
+                        b = b1 * (1 - a) + b2 * a
 
-                self.buffer[index] = (r, g, b)
+                        self.buffer[index] = (r, g, b)
+                except Exception as exception:
+                    print(exception)
 
-        self.redraw()
-        # while True:
-        #     now = time.monotonic()
-        #     self.current_red = [0] * self.config.led_count
-        #     self.current_green = [0] * self.config.led_count
-        #     self.current_blue = [0] * self.config.led_count
-# 
-        #     is_static = True
-        #     self.config.commands.sort(key=lambda x: x.z_index)
-        #     for command in self.config.commands:
-        #         if (not command.is_enabled):
-        #             continue
-# 
-        #         is_static = is_static and command.is_static
-        #         try:
-        #             command.execute(self.current_red, self.current_green, self.current_blue, self.config.led_count, now)
-        #         except Exception as exception:
-        #             print(exception)
-        #     
-        #     self.redraw()
-# 
-        #     # all commands are static, no need to rerender
-        #     if (is_static and self.config.fps_all_static_commands == 0):
-        #         self.render_task = None
-        #         break
-# 
-        #     fps = self.config.fps_all_static_commands if is_static else self.config.fps
-        #     await asyncio.sleep(1 / fps)
+            self.redraw()
+
+            # all commands are static, no need to rerender
+            if (is_static and self.config.fps_all_static_commands == 0):
+                self.render_task = None
+                break
+
+            fps = self.config.fps_all_static_commands if is_static else self.config.fps
+            await asyncio.sleep(1 / fps)
 
     def toRgbwTuple(self, tuple: tuple[float, float, float]):
         white = min(tuple[0], tuple[1], tuple[2])
@@ -79,6 +70,7 @@ class State:
             pixel = self.toRgbwTuple(self.buffer[i]) if need_rgbw_conversion else self.buffer[i]
             self.pixels[i] = pixel
         self.pixels.show()
+        print("Redraw")
 
     def _get_config_path(self):
         CONFIG_PATHS = [
@@ -102,8 +94,9 @@ class State:
         self.config = Config(
             led_count=read['led_count'],
             pixel_order=read['pixel_order'],
-            use_spi=read['use_spi'],
+            spi_enabled=read['spi_enabled'],
             spi_resend_count=read['spi_resend_count'],
+            spi_resend_sleep=read['spi_resend_sleep'],
             gpio_pin=read['gpio_pin'],
             fps=read['fps'],
             fps_all_static_commands=read['fps_all_static_commands'],
@@ -116,13 +109,14 @@ class State:
         self.pixels.brightness = 1.0
 
     def initialize_pixels(self):
-        if (self.config.use_spi):
+        if (self.config.spi_enabled):
             from .pixels.spi import NeoPixelSPI
             self.pixels = NeoPixelSPI(
                 self.config.gpio_pin,
                 self.config.led_count,
                 self.config.pixel_order,
-                self.config.spi_resend_count
+                self.config.spi_resend_count,
+                self.config.spi_resend_sleep
             )
             return
             
