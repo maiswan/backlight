@@ -1,59 +1,52 @@
 {
     "led_count": 144,
     "pixel_order": "GRBW",
-    "use_spi": true,
-    "spi_resend_count": 5,
+    "spi_enabled": true,
+    "spi_resend_count": 1,
+    "spi_resend_sleep": 0.001,
     "gpio_pin": 10,
     "fps": 4,
-    "fps_all_static_commands": 0,
+    "fps_all_static_commands": 1,
     "commands": [
         {
-            "mode": "source_rgb",
+            "mode": "source_kelvin",
             "id": "123",
             "name": "Red",
             "z_index": 0,
             "alpha": 1.0,
-            "targets": "0-91",
+            "targets": "",
             "is_enabled": true,
-            "red": 255.0,
-            "green": 0.0,
-            "blue": 0.0
+            "kelvin": 2000.0
         },
         {
-            "mode": "source_rgb",
+            "mode": "source_kelvin",
             "id": "1234",
             "name": "Green",
             "z_index": 0,
-            "alpha": 0.25,
+            "alpha": 0.33,
             "targets": "23-45",
             "is_enabled": true,
-            "red": 0.0,
-            "green": 255.0,
-            "blue": 0.0
+            "kelvin": 4000.0
         },
         {
-            "mode": "source_rgb",
+            "mode": "source_kelvin",
             "id": "12345",
             "name": "Green",
             "z_index": 0,
-            "alpha": 0.5,
+            "alpha": 0.66,
             "targets": "46-68",
             "is_enabled": true,
-            "red": 0.0,
-            "green": 255.0,
-            "blue": 0.0
+            "kelvin": 6000.0
         },
         {
-            "mode": "source_rgb",
+            "mode": "source_kelvin",
             "id": "12346",
             "name": "Green",
             "z_index": 0,
-            "alpha": 0.75,
+            "alpha": 1.0,
             "targets": "69-91",
             "is_enabled": true,
-            "red": 0.0,
-            "green": 255.0,
-            "blue": 0.0
+            "kelvin": 12000.0
         }
     ]
 }

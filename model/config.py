@@ -6,8 +6,9 @@ from .command_union import CommandUnion
 class Config(BaseModel):
     led_count: int
     pixel_order: str
-    use_spi: bool
+    spi_enabled: bool
     spi_resend_count: int
+    spi_resend_sleep: float
     gpio_pin: int
     fps: int
     fps_all_static_commands: int
@@ -17,8 +18,9 @@ class Config(BaseModel):
         return {
             'led_count': self.led_count,
             'pixel_order': self.pixel_order,
-            'use_spi': self.use_spi,
+            'spi_enabled': self.spi_enabled,
             'spi_resend_count': self.spi_resend_count,
+            'spi_resend_sleep': self.spi_resend_sleep,
             'gpio_pin': self.gpio_pin,
             'fps': self.fps,
             'fps_all_static_commands': self.fps_all_static_commands,

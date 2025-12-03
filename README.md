@@ -52,7 +52,7 @@ pip install -r requirements-pi-5.txt
 
 On a Pi 5, the LED data line must be connected to a SPI pin (e.g., GPIO10), which means you will need to change `config.json`:
 * set `gpio_pin` to `10`
-* set `use_spi` to `true`
+* set `spi_enabled` to `true`
 
 ### 3. Final touches
 Modify `config.json` as needed.
