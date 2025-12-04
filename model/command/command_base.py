@@ -5,16 +5,16 @@ from uuid import uuid4
 from pydantic import BaseModel, Field
 
 class CommandBase(BaseModel, ABC):
-    mode: ClassVar[str]                        # discriminator
+    mode: ClassVar[str]                                 # discriminator
     
     id: str = Field(default_factory=uuid4)
-    name: str = ""                             # user-friendly name
+    name: str = ""                                      # user-friendly name
     
-    z_index: int = 0                           # higher = rendered later
-    alpha: float = Field(..., ge=0.0, le=1.0)
-    targets: str = ""                          # LED indices, example: "1, 2, 3, 56-72"
+    z_index: int = Field(default=0)                     # higher = rendered later
+    alpha: float = Field(ge=0.0, le=1.0, default=1.0)
+    targets: str = ""                                   # LED indices, example: "1, 2, 3, 56-72"
     
-    is_static: ClassVar[bool] = False          # set to true if this Command does not depend on the time
+    is_static: ClassVar[bool] = False                   # set to true if this Command does not depend on the time
     is_enabled: bool = True
 
     def execute(self, buffer: List[tuple[float, float, float]], led_count: int, time: float):

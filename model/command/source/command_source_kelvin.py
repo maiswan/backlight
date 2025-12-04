@@ -4,7 +4,7 @@ from ..command_base import CommandBase
 
 class CommandSourceKelvin(CommandBase):
     mode: Literal["source_kelvin"] = "source_kelvin"
-    kelvin: float = Field(..., ge=1000, le=12000)
+    kelvin: float = Field(ge=1000, le=12000, default=6500)
     is_static = True
 
     def _compute(self, buffer: List[tuple[float, float, float]], targets: Iterable[int], time: float):

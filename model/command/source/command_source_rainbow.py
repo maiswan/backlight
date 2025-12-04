@@ -5,8 +5,8 @@ from .hsvToRgb import hsvToRgb
 
 class CommandSourceRainbow(CommandBase):
     mode: Literal["source_rainbow"] = "source_rainbow"
-    period: int = Field(..., ge=1000)
-    saturation: float = Field(..., ge=0, le=1)
+    period: int = Field(ge=1000, default=5000)
+    saturation: float = Field(ge=0, le=1, default=1.0)
     is_static = False
 
     def _compute(self, buffer: List[tuple[float, float, float]], targets: Iterable[int], time: float):

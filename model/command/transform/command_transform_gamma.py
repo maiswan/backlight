@@ -4,7 +4,7 @@ from ..command_base import CommandBase
 
 class CommandTransformGamma(CommandBase):
     mode: Literal["transform_gamma"] = "transform_gamma"
-    gamma: float = Field(..., ge=0.1, le=5.0)
+    gamma: float = Field(ge=0.1, le=5.0, default=2.2)
     is_static = True
 
     def _compute(self, buffer: List[tuple[float, float, float]], targets: Iterable[int], time: float):

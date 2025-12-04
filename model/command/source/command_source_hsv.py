@@ -5,9 +5,9 @@ from .hsvToRgb import hsvToRgb
 
 class CommandSourceHsv(CommandBase):
     mode: Literal["source_hsv"] = "source_hsv"
-    hue: float = Field(..., ge=0, le=360)
-    saturation: float = Field(..., ge=0, le=1)
-    value: float = Field(..., ge=0, le=1)
+    hue: float = Field(ge=0, le=360, default=0)
+    saturation: float = Field(ge=0, le=1, default=1)
+    value: float = Field(ge=0, le=1, default=1)
     is_static = True
 
     def _compute(self, buffer: List[tuple[float, float, float]], targets: Iterable[int], time: float):
