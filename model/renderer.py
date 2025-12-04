@@ -1,0 +1,45 @@
+from .command_union import CommandUnion
+import time
+
+class Renderer:
+    @staticmethod
+    def toRgbwTuple(tuple: tuple[float, float, float]):
+        white = min(tuple[0], tuple[1], tuple[2])
+        return (tuple[0] - white, tuple[1] - white, tuple[2] - white, white)
+
+    @staticmethod
+    def render(commands: CommandUnion, led_count: int, need_rgbw_conversion: bool):
+        now = time.monotonic()
+        is_static = True
+        commands.sort(key=lambda x: x.z_index)
+        buffer = [(0.0, 0.0, 0.0)] * led_count
+    
+        for command in commands:
+            if (not command.is_enabled):
+                continue
+
+            is_static = is_static and command.is_static
+            try:
+                new_buffer = buffer[:]
+                command.execute(new_buffer, led_count, now)
+
+                # lerp between layers
+                for index in command.get_targets(led_count):
+                    r1, g1, b1 = buffer[index]
+                    r2, g2, b2 = new_buffer[index]
+                    a = command.alpha
+
+                    r = r1 * (1 - a) + r2 * a
+                    g = g1 * (1 - a) + g2 * a
+                    b = b1 * (1 - a) + b2 * a
+
+                    buffer[index] = (r, g, b)
+
+            except Exception as exception:
+                print(exception)
+
+        if need_rgbw_conversion:
+            for i in range(len(buffer)):
+                buffer[i] = Renderer.toRgbwTuple(buffer[i])
+
+        return (is_static, buffer)
