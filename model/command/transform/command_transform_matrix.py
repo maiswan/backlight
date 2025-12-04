@@ -19,23 +19,17 @@ class CommandTransformMatrix(CommandBase):
     is_static = True
 
     def _compute(self, buffer: List[tuple[float, float, float]], targets: Iterable[int], time: float):
+        br = self.bias_red / 255
+        bg = self.bias_green / 255
+        bb = self.bias_blue / 255
+
         for i in targets:
             old_r = buffer[i][0]
             old_g = buffer[i][1]
             old_b = buffer[i][2]
 
-            r = (old_r * self.m11) + (old_g * self.m12) + (old_b * self.m13) + self.bias_red
-            g = (old_r * self.m21) + (old_g * self.m22) + (old_b * self.m23) + self.bias_red
-            b = (old_r * self.m31) + (old_g * self.m32) + (old_b * self.m33) + self.bias_red
-
-            r = self._clamp(r)
-            g = self._clamp(g)
-            b = self._clamp(b)
+            r = (old_r * self.m11) + (old_g * self.m12) + (old_b * self.m13) + br
+            g = (old_r * self.m21) + (old_g * self.m22) + (old_b * self.m23) + bg
+            b = (old_r * self.m31) + (old_g * self.m32) + (old_b * self.m33) + bb
 
             buffer[i] = (r, g, b)
-
-    def _clamp(self, value: float, minimum: float = 0, maximum: float = 255):
-        if value < minimum: return minimum
-        if value > maximum: return maximum
-        return value
-        

@@ -22,8 +22,8 @@ def hsvToRgb(hue: float, saturation: float, value: float):
     elif 300 <= h < 360:
         r, g, b = c, 0, x
 
-    r = (r + m) * 255
-    g = (g + m) * 255
-    b = (b + m) * 255
+    r += m
+    g += m
+    b += m
 
     return r, g, b

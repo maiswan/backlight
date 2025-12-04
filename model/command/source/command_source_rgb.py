@@ -10,6 +10,9 @@ class CommandSourceRgb(CommandBase):
     is_static = True
 
     def _compute(self, buffer: List[tuple[float, float, float]], targets: Iterable[int], time: float):
+        r = self.red / 255.0
+        g = self.green / 255.0
+        b = self.blue / 255.0
         for i in targets:
-            buffer[i] = (self.red, self.green, self.blue)
+            buffer[i] = (r, g, b)
         

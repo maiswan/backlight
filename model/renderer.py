@@ -5,7 +5,15 @@ class Renderer:
     @staticmethod
     def toRgbwTuple(tuple: tuple[float, float, float]):
         white = min(tuple[0], tuple[1], tuple[2])
-        return (tuple[0] - white, tuple[1] - white, tuple[2] - white, white)
+        red = (tuple[0] - white) * 255
+        green = (tuple[1] - white) * 255
+        blue = (tuple[2] - white) * 255
+        white *= 255
+        return (red, green, blue, white)
+
+    @staticmethod
+    def toRgbTuple(tuple: tuple[float, float, float]):
+        return (tuple[0] * 255, tuple[1] * 255, tuple[2] * 255)
 
     @staticmethod
     def render(commands: CommandUnion, led_count: int, need_rgbw_conversion: bool):
@@ -38,8 +46,8 @@ class Renderer:
             except Exception as exception:
                 print(exception)
 
-        if need_rgbw_conversion:
-            for i in range(len(buffer)):
-                buffer[i] = Renderer.toRgbwTuple(buffer[i])
+        scale = Renderer.toRgbwTuple if need_rgbw_conversion else Renderer.toRgbTuple
+        for i in range(len(buffer)):
+            buffer[i] = scale(buffer[i])
 
         return (is_static, buffer)

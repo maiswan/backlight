@@ -9,8 +9,8 @@ class CommandTransformGamma(CommandBase):
 
     def _compute(self, buffer: List[tuple[float, float, float]], targets: Iterable[int], time: float):
         for i in targets:
-            r = pow(buffer[i][0] / 255.0, self.gamma) * 255.0
-            g = pow(buffer[i][1] / 255.0, self.gamma) * 255.0
-            b = pow(buffer[i][2] / 255.0, self.gamma) * 255.0
+            r = pow(buffer[i][0], self.gamma)
+            g = pow(buffer[i][1], self.gamma)
+            b = pow(buffer[i][2], self.gamma)
             buffer[i] = (r, g, b)
         
