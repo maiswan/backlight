@@ -7,6 +7,9 @@ config.dev.json
 lg/
 lg.zip*
 .lgd-nfy0
+rpi_ws2812x/
+test.py
+test.sh
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

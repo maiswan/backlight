@@ -19,7 +19,7 @@ python -m venv .venv
 source .venv/bin/activate
 ```
 
-### 2a. Install packages (For everything OTHER than Pi 5)
+### 2a. Install packages (PWM) (For everything OTHER than Pi 5)
 > [!WARNING]
 > If you have a Pi 5, proceed to step 2b instead.
 
@@ -27,9 +27,12 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 2b. Install packages (For Pi 5 ONLY)
+### 2b. Install packages (SPI) (For Pi 5)
 > [!WARNING]
-> Follow these steps only if you have a Pi 5. Otherwise, return to step 2a.
+> This section is only for the Pi 5. Return to step 2a otherwise.
+
+> [!IMPORTANT]
+> With SPI, backlight can only address 168 RGB LEDs (≈ 126 RGBW LEDs) because of the underlying SPI driver. [The issue is tracked here](https://github.com/adafruit/Adafruit_CircuitPython_NeoPixel_SPI/issues/37). 
 
 ```bash
 # https://gordonlesti.com/light-up-ws2811-leds-with-a-raspberry-pi-5-via-spi/
@@ -50,9 +53,7 @@ cd ..
 pip install -r requirements-pi-5.txt
 ```
 
-On a Pi 5, the LED data line must be connected to a SPI pin (e.g., GPIO10), which means you will need to change `config.json`:
-* set `gpio_pin` to `10`
-* set `spi_enabled` to `true`
+On a Pi 5, the LED data line must be connected to a SPI pin (e.g., GPIO10). In `config.json`, set `spi_enabled` to `true`.
 
 ### 3. Final touches
 Modify `config.json` as needed.
@@ -81,7 +82,7 @@ Backlight also offers remote control through a HTTP API. The routes are as follo
 | `GET` | `/api/v2/config` | Get the current configurations and commands |
 | `GET` | `/api/v2/config/stream` | Get the current configurations and commands via [SSE](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) |
 
-There are two endpoints for each of `led_count`, `pixel_order`, `gpio_pin` and `fps`.
+There are two endpoints for each of `led_count`, `pixel_order`, `pwm_pin` and `fps`.
 
     GET /api/v2/config/{x}
     PUT /api/v2/config/{x}
