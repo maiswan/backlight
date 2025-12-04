@@ -61,19 +61,19 @@ async def put_pixel_order(payload: StrPayload = Body(...)):
     state.initialize_pixels()
     state.write_config()
 
-# gpio_pin
-@router.get("/gpio_pin")
-async def get_gpio_pin():
-    return state.config.gpio_pin
+# pwm_pin
+@router.get("/pwm_pin")
+async def get_pwm_pin():
+    return state.config.pwm_pin
 
-@router.put("/gpio_pin", status_code=status.HTTP_204_NO_CONTENT)
-async def put_gpio_pin(payload: IntPayload = Body(...)):
-    state.config.gpio_pin = payload.value
+@router.put("/pwm_pin", status_code=status.HTTP_204_NO_CONTENT)
+async def put_pwm_pin(payload: IntPayload = Body(...)):
+    state.config.pwm_pin = payload.value
     state.initialize_pixels()
     state.write_config()
 
 
-# gpio_pin
+# pwm_pin
 @router.get("/fps")
 async def get_fps():
     return state.config.fps
@@ -93,13 +93,13 @@ async def put_fps_all_static_commands(payload: IntPayload = Body(...)):
     state.config.fps_all_static_commands = payload.value
     state.write_config()
 
-# force_rerender_gpio_pin
-@router.get("/force_rerender_gpio_pin")
-async def get_force_rerender_gpio_pin():
-    return state.config.force_rerender_gpio_pin
+# force_rerender_pwm_pin
+@router.get("/force_rerender_pwm_pin")
+async def get_force_rerender_pwm_pin():
+    return state.config.force_rerender_pwm_pin
 
-@router.put("/force_rerender_gpio_pin", status_code=status.HTTP_204_NO_CONTENT)
-async def put_force_rerender_gpio_pin(payload: IntPayload = Body(...)):
-    state.config.force_rerender_gpio_pin = payload.value
+@router.put("/force_rerender_pwm_pin", status_code=status.HTTP_204_NO_CONTENT)
+async def put_force_rerender_pwm_pin(payload: IntPayload = Body(...)):
+    state.config.force_rerender_pwm_pin = payload.value
     state.write_config()
     state.initialize_force_render_task()

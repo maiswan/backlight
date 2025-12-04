@@ -3,50 +3,63 @@
     "pixel_order": "GRBW",
     "spi_enabled": true,
     "spi_resend_count": 1,
-    "spi_resend_sleep": 0.001,
-    "gpio_pin": 10,
-    "fps": 4,
-    "fps_all_static_commands": 1,
+    "spi_resend_sleep": 0.0,
+    "pwm_pin": 10,
+    "fps": 30,
+    "fps_all_static_commands": 30,
     "commands": [
         {
-            "mode": "source_kelvin",
+            "mode": "source_hsv",
             "id": "123",
             "name": "Red",
             "z_index": 0,
             "alpha": 1.0,
             "targets": "",
             "is_enabled": true,
-            "kelvin": 2000.0
+            "hue": 162.0,
+            "saturation": 1.0,
+            "value": 1.0
         },
         {
-            "mode": "source_kelvin",
-            "id": "1234",
-            "name": "Green",
-            "z_index": 0,
-            "alpha": 0.33,
-            "targets": "23-45",
-            "is_enabled": true,
-            "kelvin": 4000.0
-        },
-        {
-            "mode": "source_kelvin",
-            "id": "12345",
-            "name": "Green",
-            "z_index": 0,
-            "alpha": 0.66,
-            "targets": "46-68",
-            "is_enabled": true,
-            "kelvin": 6000.0
-        },
-        {
-            "mode": "source_kelvin",
-            "id": "12346",
-            "name": "Green",
-            "z_index": 0,
+            "mode": "transform_matrix",
+            "id": "1233",
+            "name": "Red",
+            "z_index": 10,
             "alpha": 1.0,
-            "targets": "69-91",
+            "targets": "72-143",
             "is_enabled": true,
-            "kelvin": 12000.0
+            "m11": -0.33,
+            "m12": 1.33,
+            "m13": 1.33,
+            "m21": 1.33,
+            "m22": -0.33,
+            "m23": 1.33,
+            "m31": 1.33,
+            "m32": 1.33,
+            "m33": -0.33,
+            "bias_red": 0.0,
+            "bias_green": 0.0,
+            "bias_blue": 0.0
+        },
+        {
+            "mode": "transform_brightness",
+            "id": "1233",
+            "name": "Red",
+            "z_index": 20,
+            "alpha": 1.0,
+            "targets": "",
+            "is_enabled": true,
+            "brightness": 0.3
+        },
+        {
+            "mode": "transform_gamma",
+            "id": "1233",
+            "name": "Red",
+            "z_index": 30,
+            "alpha": 1.0,
+            "targets": "",
+            "is_enabled": true,
+            "gamma": 2.2
         }
     ]
 }

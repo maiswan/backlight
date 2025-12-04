@@ -2,7 +2,7 @@ from microcontroller import Pin
 from neopixel import NeoPixel
 from .pixel_base import PixelBase
 
-class NeoPixelGPIO(PixelBase):
+class NeoPixelPWM(PixelBase):
 
     _pixels: NeoPixel
 

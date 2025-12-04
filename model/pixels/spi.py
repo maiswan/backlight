@@ -30,10 +30,9 @@ class NeoPixelSPI(PixelBase):
             self._pixels.show()
             time.sleep(self._resend_sleep)
 
-    def __init__(self, pin: int, count: int, pixel_order: str, resend_count: int, resend_sleep: float):
-        spi = SPI()
+    def __init__(self, count: int, pixel_order: str, resend_count: int, resend_sleep: float):
         self._pixels = NeoPixel_SPI(
-            spi,
+            SPI(),
             count,
             pixel_order=pixel_order,
             auto_write=False
