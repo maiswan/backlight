@@ -7,11 +7,9 @@ class Config(BaseModel):
     led_count: int
     pixel_order: str
     spi_enabled: bool
-    spi_resend_count: int
-    spi_resend_sleep: float
     pwm_pin: int
     fps: int
-    fps_all_static_commands: int
+    fps_static: int
     commands: list[CommandUnion] = []
 
     def to_dict(self):
@@ -19,10 +17,8 @@ class Config(BaseModel):
             'led_count': self.led_count,
             'pixel_order': self.pixel_order,
             'spi_enabled': self.spi_enabled,
-            'spi_resend_count': self.spi_resend_count,
-            'spi_resend_sleep': self.spi_resend_sleep,
             'pwm_pin': self.pwm_pin,
             'fps': self.fps,
-            'fps_all_static_commands': self.fps_all_static_commands,
+            'fps_static': self.fps_static,
             'commands': [instr.model_dump(mode='json') for instr in self.commands],
         }

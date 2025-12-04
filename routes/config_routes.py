@@ -39,6 +39,9 @@ class IntPayload(BaseModel):
 class StrPayload(BaseModel):
     value: str
 
+class BoolPayload(BaseModel):
+    value: bool
+
 # led_count
 @router.get("/led_count")
 async def get_led_count():
@@ -61,6 +64,17 @@ async def put_pixel_order(payload: StrPayload = Body(...)):
     state.initialize_pixels()
     state.write_config()
 
+# pixel_order
+@router.get("/spi_enabled")
+async def get_spi_enabled():
+    return state.config.pixel_order
+
+@router.put("/spi_enabled", status_code=status.HTTP_204_NO_CONTENT)
+async def put_spi_enabled(payload: BoolPayload = Body(...)):
+    state.config.spi_enabled = payload.value
+    state.initialize_pixels()
+    state.write_config()
+
 # pwm_pin
 @router.get("/pwm_pin")
 async def get_pwm_pin():
@@ -72,7 +86,6 @@ async def put_pwm_pin(payload: IntPayload = Body(...)):
     state.initialize_pixels()
     state.write_config()
 
-
 # pwm_pin
 @router.get("/fps")
 async def get_fps():
@@ -83,23 +96,12 @@ async def put_fps(payload: IntPayload = Body(...)):
     state.config.fps = payload.value
     state.write_config()
 
-# fps_all_static_commands
-@router.get("/fps_all_static_commands")
-async def get_fps_all_static_commands():
-    return state.config.fps_all_static_commands
+# fps_static
+@router.get("/fps_static")
+async def get_fps_static():
+    return state.config.fps_static
 
-@router.put("/fps_all_static_commands", status_code=status.HTTP_204_NO_CONTENT)
-async def put_fps_all_static_commands(payload: IntPayload = Body(...)):
-    state.config.fps_all_static_commands = payload.value
+@router.put("/fps_static", status_code=status.HTTP_204_NO_CONTENT)
+async def put_fps_static(payload: IntPayload = Body(...)):
+    state.config.fps_static = payload.value
     state.write_config()
-
-# force_rerender_pwm_pin
-@router.get("/force_rerender_pwm_pin")
-async def get_force_rerender_pwm_pin():
-    return state.config.force_rerender_pwm_pin
-
-@router.put("/force_rerender_pwm_pin", status_code=status.HTTP_204_NO_CONTENT)
-async def put_force_rerender_pwm_pin(payload: IntPayload = Body(...)):
-    state.config.force_rerender_pwm_pin = payload.value
-    state.write_config()
-    state.initialize_force_render_task()

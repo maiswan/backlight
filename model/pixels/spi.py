@@ -6,8 +6,6 @@ import time
 class NeoPixelSPI(PixelBase):
 
     _pixels: NeoPixel_SPI
-    _resend_count: int
-    _resend_sleep: float
 
     @property
     def pixels(self):
@@ -25,22 +23,15 @@ class NeoPixelSPI(PixelBase):
 
     @brightness.setter
     def brightness(self, value: float):
-        for i in range(self._resend_count):
-            self._pixels.brightness = value
-            self._pixels.show()
-            time.sleep(self._resend_sleep)
+        self._pixels.brightness = value
 
-    def __init__(self, count: int, pixel_order: str, resend_count: int, resend_sleep: float):
+    def __init__(self, count: int, pixel_order: str):
         self._pixels = NeoPixel_SPI(
             SPI(),
             count,
             pixel_order=pixel_order,
             auto_write=False
         )
-        self._resend_count = resend_count
-        self._resend_sleep = resend_sleep
 
     def show(self):
-        for i in range(self._resend_count):
-            self._pixels.show()
-            time.sleep(self._resend_sleep)
+        self._pixels.show()

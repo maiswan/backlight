@@ -55,11 +55,11 @@ class State:
             self.redraw()
 
             # all commands are static, no need to rerender
-            if (is_static and self.config.fps_all_static_commands == 0):
+            if (is_static and self.config.fps_static == 0):
                 self.render_task = None
                 break
 
-            fps = self.config.fps_all_static_commands if is_static else self.config.fps
+            fps = self.config.fps_static if is_static else self.config.fps
             await asyncio.sleep(1 / fps)
 
     def toRgbwTuple(self, tuple: tuple[float, float, float]):
@@ -98,11 +98,9 @@ class State:
             led_count=read['led_count'],
             pixel_order=read['pixel_order'],
             spi_enabled=read['spi_enabled'],
-            spi_resend_count=read['spi_resend_count'],
-            spi_resend_sleep=read['spi_resend_sleep'],
             pwm_pin=read['pwm_pin'],
             fps=read['fps'],
-            fps_all_static_commands=read['fps_all_static_commands'],
+            fps_static=read['fps_static'],
             commands=read['commands'],
         )
 
@@ -116,9 +114,7 @@ class State:
             from .pixels.spi import NeoPixelSPI
             self.pixels = NeoPixelSPI(
                 self.config.led_count,
-                self.config.pixel_order,
-                self.config.spi_resend_count,
-                self.config.spi_resend_sleep
+                self.config.pixel_order
             )
             return
             
