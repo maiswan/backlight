@@ -32,7 +32,9 @@ class State:
 
                 is_static = is_static and command.is_static
                 try:
-                    buffer = [(0.0, 0.0, 0.0)] * self.config.led_count
+                    # use a new buffer for source commands,
+                    # use the existing buffer to transform existing colors
+                    buffer = [(0.0, 0.0, 0.0)] * self.config.led_count if "source_" in command.mode else self.buffer[:]
                     command.execute(buffer, self.config.led_count, now)
 
                     # lerp between layers
@@ -46,6 +48,7 @@ class State:
                         b = b1 * (1 - a) + b2 * a
 
                         self.buffer[index] = (r, g, b)
+
                 except Exception as exception:
                     print(exception)
 
@@ -69,6 +72,7 @@ class State:
         for i in range(self.config.led_count):
             pixel = self.toRgbwTuple(self.buffer[i]) if need_rgbw_conversion else self.buffer[i]
             self.pixels[i] = pixel
+        
         self.pixels.show()
 
     def _get_config_path(self):
@@ -96,7 +100,7 @@ class State:
             spi_enabled=read['spi_enabled'],
             spi_resend_count=read['spi_resend_count'],
             spi_resend_sleep=read['spi_resend_sleep'],
-            gpio_pin=read['gpio_pin'],
+            pwm_pin=read['pwm_pin'],
             fps=read['fps'],
             fps_all_static_commands=read['fps_all_static_commands'],
             commands=read['commands'],
@@ -111,7 +115,6 @@ class State:
         if (self.config.spi_enabled):
             from .pixels.spi import NeoPixelSPI
             self.pixels = NeoPixelSPI(
-                self.config.gpio_pin,
                 self.config.led_count,
                 self.config.pixel_order,
                 self.config.spi_resend_count,
@@ -119,9 +122,9 @@ class State:
             )
             return
             
-        from .pixels.gpio import NeoPixelGPIO
+        from .pixels.pwm import NeoPixelPWM
         self.pixels = NeoPixelGPIO(
-            self.config.gpio_pin,
+            self.config.pwm_pin,
             self.config.led_count,
             self.config.pixel_order,
         )
