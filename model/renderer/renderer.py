@@ -1,4 +1,5 @@
-from .command_union import CommandUnion
+from ..command_union import CommandUnion
+from .blender import Blender, BlendMode
 import time
 
 class Renderer:
@@ -28,20 +29,21 @@ class Renderer:
 
             is_static = is_static and command.is_static
             try:
+                # Compute buffer
                 new_buffer = buffer[:]
                 command.execute(new_buffer, led_count, now)
 
-                # lerp between layers
+                # Blend
+                # Transform commands do not support the blend property (since it doesn't really makes sense)
+                blend_mode = command.blend if "source" in command.mode else BlendMode.NORMAL
+
                 for index in command.get_targets(led_count):
-                    r1, g1, b1 = buffer[index]
-                    r2, g2, b2 = new_buffer[index]
-                    a = command.alpha
-
-                    r = r1 * (1 - a) + r2 * a
-                    g = g1 * (1 - a) + g2 * a
-                    b = b1 * (1 - a) + b2 * a
-
-                    buffer[index] = (r, g, b)
+                    buffer[index] = Blender.blend(
+                        buffer[index],
+                        new_buffer[index],
+                        blend_mode,
+                        command.alpha
+                    )
 
             except Exception as exception:
                 print(exception)

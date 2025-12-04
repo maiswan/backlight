@@ -1,8 +1,8 @@
 from typing import Iterable, List, Literal
 from pydantic import Field, model_validator
-from ..command_base import CommandBase
+from .command_source_base import CommandSourceBase
 
-class CommandSourceKelvin(CommandBase):
+class CommandSourceKelvin(CommandSourceBase):
     mode: Literal["source_kelvin"] = "source_kelvin"
     kelvin: float = Field(ge=1000, le=12000, default=6500)
     is_static = True

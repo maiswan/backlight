@@ -1,9 +1,9 @@
 from typing import Iterable, List, Literal
 from pydantic import Field, model_validator
-from ..command_base import CommandBase
+from .command_source_base import CommandSourceBase
 from .hsvToRgb import hsvToRgb
 
-class CommandSourceRainbow(CommandBase):
+class CommandSourceRainbow(CommandSourceBase):
     mode: Literal["source_rainbow"] = "source_rainbow"
     period: int = Field(ge=1000, default=5000)
     saturation: float = Field(ge=0, le=1, default=1.0)

@@ -5,7 +5,7 @@ import os
 import time
 from .pixels.pixel_base import PixelBase
 from .config import Config
-from .renderer import Renderer
+from .renderer.renderer import Renderer
 
 class State:
     config: Config
@@ -28,7 +28,6 @@ class State:
             )
 
             # Redraw
-            print("Redraw")
             for i in range(self.config.led_count):
                 self.pixels[i] = buffer[i]
             self.pixels.show()
