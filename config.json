@@ -4,38 +4,35 @@
     "spi_enabled": true,
     "pwm_pin": 10,
     "fps": 30,
-    "fps_static": 1,
+    "fps_static": 0,
     "commands": [
         {
-            "mode": "source_kelvin",
-            "id": "f8a3e4d6-bd3e-402b-8f05-ea31da2c6d1d",
+            "mode": "source_rainbow_rolling",
+            "id": "2e89a849-63cf-483d-ba65-2a8ccd139845",
             "name": "",
             "z_index": 0,
             "alpha": 1.0,
             "targets": "",
             "is_enabled": true,
-            "kelvin": 6500.0
+            "blend": "normal",
+            "period": 4000,
+            "wavelength": 96,
+            "saturation": 1.0,
+            "propagation": 1
         },
         {
-            "mode": "source_rainbow",
-            "id": "0d66d399-1c68-4947-8cac-7f61d57e122b",
-            "name": "",
-            "z_index": 0,
-            "alpha": 0.4,
-            "targets": "",
-            "is_enabled": true,
-            "period": 60000,
-            "saturation": 1.0
-        },
-        {
-            "mode": "transform_brightness",
+            "mode": "transform_brightness_rolling",
             "id": "a7848b8c-79bf-4db7-b9c1-ac2a978eb4ec",
             "name": "",
             "z_index": 0,
             "alpha": 1.0,
             "targets": "",
             "is_enabled": true,
-            "brightness": 0.5
+            "min_brightness": 0.0,
+            "max_brightness": 0.3,
+            "period": 4000,
+            "wavelength": 96,
+            "propagation": 0
         },
         {
             "mode": "transform_gamma",
@@ -46,6 +43,18 @@
             "targets": "",
             "is_enabled": true,
             "gamma": 2.2
+        },
+        {
+            "mode": "transform_dithering",
+            "id": "e0ccf7da-465c-4ec2-823d-174861e16d56",
+            "name": "",
+            "z_index": 0,
+            "alpha": 1.0,
+            "targets": "",
+            "is_enabled": true,
+            "min_red": 1,
+            "min_green": 1,
+            "min_blue": 1
         }
     ]
 }
