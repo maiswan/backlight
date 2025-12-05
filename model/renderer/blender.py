@@ -10,6 +10,11 @@ class BlendMode(Enum):
     ADDITIVE = "additive"
     SUBTRACT = "subtract"
     DIFFERENCE = "difference"
+    COLOR_DODGE = "color_dodge"
+    COLOR_BURN = "color_burn"
+    SOFT_LIGHT = "soft_light"
+    HARD_LIGHT = "hard_light"
+    EXCLUSION = "exclusion" # aka XOR
 
 class Blender:
 
@@ -25,7 +30,12 @@ class Blender:
             BlendMode.LIGHTEN: Blender.lighten,
             BlendMode.ADDITIVE: Blender.additive,
             BlendMode.SUBTRACT: Blender.subtract,
-            BlendMode.DIFFERENCE: Blender.difference
+            BlendMode.DIFFERENCE: Blender.difference,
+            BlendMode.COLOR_DODGE: Blender.color_dodge,
+            BlendMode.COLOR_BURN: Blender.color_burn,
+            BlendMode.SOFT_LIGHT: Blender.soft_light,
+            BlendMode.HARD_LIGHT: Blender.hard_light,
+            BlendMode.EXCLUSION: Blender.exclusion,
         }
 
         function = blend_modes[mode]
@@ -72,3 +82,29 @@ class Blender:
     @staticmethod
     def difference(bottom: float, top: float):
         return abs(bottom - top)
+    
+    @staticmethod
+    def color_dodge(bottom: float, top: float):
+        if top == 1:
+            return 1
+        return min(1, bottom / (1 - top))
+
+    @staticmethod
+    def color_burn(bottom: float, top: float):
+        if top == 0:
+            return 0
+        return 1 - min(1, bottom / (1 - top))
+
+    @staticmethod
+    def soft_light(bottom: float, top: float):
+        return (1 - 2 * top) * pow(bottom, 2) + 2 * bottom * top
+
+    @staticmethod
+    def hard_light(bottom: float, top: float):
+        if top < 0.5:
+            return 2 * bottom * top
+        return 1 - 2 * (1 - top) * (1 - bottom)
+
+    @staticmethod
+    def exclusion(bottom: float, top: float):
+        return bottom + top - 2 * bottom * top
