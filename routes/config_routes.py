@@ -51,7 +51,7 @@ async def get_led_count():
 async def put_led_count(payload: IntPayload = Body(...)):
     state.config.led_count = payload.value
     state.initialize_pixels()
-    state.write_config()
+    state.config.write()
 
 # pixel_order
 @router.get("/pixel_order")
@@ -62,7 +62,7 @@ async def get_pixel_order():
 async def put_pixel_order(payload: StrPayload = Body(...)):
     state.config.pixel_order = payload.value
     state.initialize_pixels()
-    state.write_config()
+    state.config.write()
 
 # pixel_order
 @router.get("/spi_enabled")
@@ -73,7 +73,7 @@ async def get_spi_enabled():
 async def put_spi_enabled(payload: BoolPayload = Body(...)):
     state.config.spi_enabled = payload.value
     state.initialize_pixels()
-    state.write_config()
+    state.config.write()
 
 # pwm_pin
 @router.get("/pwm_pin")
@@ -84,7 +84,7 @@ async def get_pwm_pin():
 async def put_pwm_pin(payload: IntPayload = Body(...)):
     state.config.pwm_pin = payload.value
     state.initialize_pixels()
-    state.write_config()
+    state.config.write()
 
 # pwm_pin
 @router.get("/fps")
@@ -94,7 +94,7 @@ async def get_fps():
 @router.put("/fps", status_code=status.HTTP_204_NO_CONTENT)
 async def put_fps(payload: IntPayload = Body(...)):
     state.config.fps = payload.value
-    state.write_config()
+    state.config.write()
 
 # fps_static
 @router.get("/fps_static")
@@ -104,4 +104,4 @@ async def get_fps_static():
 @router.put("/fps_static", status_code=status.HTTP_204_NO_CONTENT)
 async def put_fps_static(payload: IntPayload = Body(...)):
     state.config.fps_static = payload.value
-    state.write_config()
+    state.config.write()

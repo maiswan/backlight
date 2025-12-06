@@ -1,6 +1,5 @@
 from asyncio import Task
 import asyncio
-import json
 import os
 import time
 from .pixels.pixel_base import PixelBase
@@ -50,23 +49,11 @@ class State:
             if os.path.exists(config_path):
                 return config_path
             
-        raise Exception("No configuration file found") 
+        raise Exception("No configuration file found")
 
     def __init__(self):
-        self.config_path = self._get_config_path()
-
-        with open(self.config_path) as f:
-            read = json.load(f)
-
-        self.config = Config(
-            led_count=read['led_count'],
-            pixel_order=read['pixel_order'],
-            spi_enabled=read['spi_enabled'],
-            pwm_pin=read['pwm_pin'],
-            fps=read['fps'],
-            fps_static=read['fps_static'],
-            commands=read['commands'],
-        )
+        config_path = self._get_config_path()
+        self.config = Config.load(config_path)
 
         self.initialize_pixels()
         self.initialize_render_task()
@@ -89,10 +76,6 @@ class State:
             self.config.pixel_order,
         )
 
-    def write_config(self):
-        with open(self.config_path, 'w') as f:
-            json.dump(self.config.to_dict(), f, indent=4)
-
     async def deconstruct(self):            
         # Turn off LEDs
         self.pixels.brightness = 0.0
@@ -102,7 +85,7 @@ class State:
             self.render_task.cancel()
             await self.render_task
 
-        self.write_config()
+        self.config.write()
 
 
 # Singleton instance

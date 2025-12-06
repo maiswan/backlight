@@ -1,7 +1,8 @@
-from typing import Union
 from typing import Annotated, Union
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, PrivateAttr
 from .command_union import CommandUnion
+import json
+
 
 class Config(BaseModel):
     led_count: int
@@ -11,14 +12,25 @@ class Config(BaseModel):
     fps: int
     fps_static: int
     commands: list[CommandUnion] = []
+    _path: str | None = PrivateAttr(default=None)
 
-    def to_dict(self):
-        return {
-            'led_count': self.led_count,
-            'pixel_order': self.pixel_order,
-            'spi_enabled': self.spi_enabled,
-            'pwm_pin': self.pwm_pin,
-            'fps': self.fps,
-            'fps_static': self.fps_static,
-            'commands': [instr.model_dump(mode='json') for instr in self.commands],
-        }
+    @classmethod
+    def load(cls, path: str):
+        with open(path, 'r') as f:
+            data = json.load(f)
+
+        config = cls.model_validate(data)
+        config._path = path
+        return config
+
+    def write(self, path: str | None = None):
+        if path is None:
+            path = self._path
+
+        if path is None:
+            raise ValueError("No path specified for writing config")
+
+        model_dump = self.model_dump(mode='json')
+
+        with open(path, 'w') as f:
+            json.dump(model_dump, f, indent=4)
