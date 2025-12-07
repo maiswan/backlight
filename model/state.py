@@ -14,29 +14,46 @@ class State:
     pixels: PixelBase
 
     def initialize_render_task(self):
-        if (self.render_task): self.render_task.cancel()        
-        self.render_task = self.loop.create_task(self.render_loop())
+        if (self.render_task): self.render_task.cancel()      
+        self.render_task = self.loop.create_task(self._render_loop())
+
+    def _redraw(self, buffer: list[tuple[float, float, float]] | list[tuple[float, float, float, float]]):
+        for i in range(self.config.led_count):
+            self.pixels[i] = buffer[i]
+        self.pixels.show()
+
+    def _render(self, needs_rgbw: bool):
+        return Renderer.render(
+            self.config.commands,
+            self.config.led_count,
+            needs_rgbw
+        )
                 
-    async def render_loop(self):
-        needs_rgbw_conversion = "W" in self.config.pixel_order
+    async def _render_loop(self):
+        needs_rgbw = "W" in self.config.pixel_order  
+
+        # First frame
+        is_static, buffer = self._render(needs_rgbw)
+        self._redraw(buffer)
+        
+        # Fast exit if the user doesn't want to rerender static content
+        if (is_static and self.config.fps_static <= 0):
+            return
+
+        # Redraw every frame
+        if is_static:
+            # STATIC: no rerender, just redraw
+            interval = 1.0 / self.config.fps_static
+            while True:
+                await asyncio.sleep(interval)
+                self._redraw(buffer)
+                
+        # ANIMATED: rerender then redraw
+        interval = 1.0 / self.config.fps
         while True:
-            is_static, buffer = Renderer.render(
-                self.config.commands,
-                self.config.led_count,
-                needs_rgbw_conversion
-            )
-
-            # Redraw
-            for i in range(self.config.led_count):
-                self.pixels[i] = buffer[i]
-            self.pixels.show()
-
-            # Decide whether we need to render the next frame as well
-            if (is_static and self.config.fps_static == 0):
-                return
-
-            fps = self.config.fps_static if is_static else self.config.fps
-            await asyncio.sleep(1 / fps)
+            await asyncio.sleep(interval)
+            _, buffer = self._render(needs_rgbw)
+            self._redraw(buffer)
 
     def _get_config_path(self):
         CONFIG_PATHS = [
