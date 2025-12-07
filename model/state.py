@@ -8,14 +8,13 @@ from .renderer.renderer import Renderer
 
 class State:
     config: Config
-    config_path: str = ""
     render_task: Task | None = None
-    loop = asyncio.get_event_loop()
     pixels: PixelBase
 
     def initialize_render_task(self):
-        if (self.render_task): self.render_task.cancel()      
-        self.render_task = self.loop.create_task(self._render_loop())
+        if (self.render_task): self.render_task.cancel()
+        loop = asyncio.get_event_loop()
+        self.render_task = loop.create_task(self._render_loop())
 
     def _redraw(self, buffer: list[tuple[float, float, float]] | list[tuple[float, float, float, float]]):
         for i in range(self.config.led_count):
@@ -93,17 +92,13 @@ class State:
             self.config.pixel_order,
         )
 
-    async def deconstruct(self):            
+    async def deconstruct(self):
+        if (self.render_task): 
+            self.render_task.cancel()
+            await self.render_task
+ 
         # Turn off LEDs
         self.pixels.brightness = 0.0
         self.pixels.show()
 
-        if (self.render_task): 
-            self.render_task.cancel()
-            await self.render_task
-
         self.config.write()
-
-
-# Singleton instance
-state: State = State()

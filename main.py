@@ -1,5 +1,5 @@
 # Singleton config
-from model.state import state
+from model.state import State
 
 # HTTP server
 from contextlib import asynccontextmanager
@@ -11,8 +11,11 @@ from routes.command_routes import router as command_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # on startup
+    state = State()
+    yield { "state": state }
+    
     # actions on exit
-    yield
     await state.deconstruct()
 
 app = FastAPI(
@@ -37,3 +40,6 @@ async def root():
     return "maiswan/backlight"
 
 app.mount("/dashboard", StaticFiles(directory="dashboard/dist", html=True))
+
+if __name__ == "__main__":
+    pass
