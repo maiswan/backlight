@@ -1,7 +1,8 @@
 {
+    "port": 12021,
     "led_count": 96,
     "pixel_order": "GRBW",
-    "spi_enabled": true,
+    "spi_enabled": false,
     "pwm_pin": 10,
     "fps": 30,
     "fps_static": 0,

@@ -44,6 +44,18 @@ class StrPayload(BaseModel):
 class BoolPayload(BaseModel):
     value: bool
 
+# port
+@router.get("/port")
+async def get_port(request: Request):
+    state = request.state.state
+    return state.config.port
+
+@router.put("/port", status_code=status.HTTP_204_NO_CONTENT)
+async def put_led_count(request: Request, payload: IntPayload = Body(...)):
+    state = request.state.state
+    state.config.port = payload.value
+    state.config.write()
+
 # led_count
 @router.get("/led_count")
 async def get_led_count(request: Request):

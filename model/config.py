@@ -5,6 +5,7 @@ import json
 
 
 class Config(BaseModel):
+    port: int
     led_count: int
     pixel_order: str
     spi_enabled: bool

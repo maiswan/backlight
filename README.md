@@ -21,7 +21,7 @@ source .venv/bin/activate
 
 ### 2a. Install packages (PWM) (NOT for Pi 5)
 > [!WARNING]
-> If you have a Pi 5, proceed to step 2b instead.
+> If you have a Pi 5, skip directly to step 2b instead.
 
 ```bash
 pip install -r requirements.txt
@@ -29,7 +29,7 @@ pip install -r requirements.txt
 
 ### 2b. Install packages (SPI) (For Pi 5)
 > [!WARNING]
-> This section is recommended for the Pi 5 only. Consider returning to step 2a instead.
+> This section is recommended for the Pi 5 only.
 
 > [!IMPORTANT]
 > With SPI, backlight can only address 168 RGB LEDs (≈ 126 RGBW LEDs) because of the underlying SPI driver. [The issue is tracked here](https://github.com/adafruit/Adafruit_CircuitPython_NeoPixel_SPI/issues/37). 
@@ -66,9 +66,9 @@ chmod 755 backlight.sh
 
 ## Configurations
 
-All configurations are inside `config.json`. Backlight saves the currently executing LED commands when it exits and re-applies them automatically on startup.
+backlight will read and use the first available configuration file from `config.dev.json`, `config.prod.json`, and `config.json`. When exiting, backlight saves the latest configurations and LED commands.
 
-Backlight also offers remote control through a HTTP API. The routes are as follows:
+backlight also offers remote control through a HTTP API. The routes are as follows:
 
 | Request | Path | Functionality |
 |---------|------|---------------|
@@ -82,7 +82,7 @@ Backlight also offers remote control through a HTTP API. The routes are as follo
 | `GET` | `/api/v3/config` | Get the current configurations and commands |
 | `GET` | `/api/v3/config/stream` | Get the current configurations and commands via [SSE](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) |
 
-There are two endpoints for each of `led_count`, `pixel_order`, `spi_enabled`, `pwm_pin` and `fps`, `fps_static`.
+There are two endpoints for each of `port`, `led_count`, `pixel_order`, `spi_enabled`, `pwm_pin` and `fps`, `fps_static`.
 
     GET /api/v3/config/{x}
     PUT /api/v3/config/{x}
@@ -90,10 +90,12 @@ There are two endpoints for each of `led_count`, `pixel_order`, `spi_enabled`, `
 When sending a PUT request, encapsulate the value in a JSON object:
 
 ```
-PUT /api/v2/config/fps
+PUT /api/v3/config/fps
 ```
 ```json
 {
     "value": 60
 }
 ```
+
+Updating the `port` value will require restarting backlight.

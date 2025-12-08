@@ -9,10 +9,11 @@ from fastapi.staticfiles import StaticFiles
 from routes.config_routes import router as config_router
 from routes.command_routes import router as command_router
 
+state = State()
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # on startup
-    state = State()
     yield { "state": state }
     
     # actions on exit
@@ -34,12 +35,12 @@ app.add_middleware(
 
 app.include_router(config_router, prefix="/api/v3/config", tags=["config"])
 app.include_router(command_router, prefix="/api/v3/commands", tags=["commands"])
+app.mount("/dashboard", StaticFiles(directory="dashboard/dist", html=True))
 
 @app.get("/")
 async def root():
     return "maiswan/backlight"
 
-app.mount("/dashboard", StaticFiles(directory="dashboard/dist", html=True))
-
 if __name__ == "__main__":
-    pass
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=state.config.port)
