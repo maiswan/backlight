@@ -3,17 +3,16 @@ from pydantic import BaseModel, Field, PrivateAttr
 from .command_union import CommandUnion
 import json
 
-
 class Config(BaseModel):
-    port: int
-    led_count: int
+    port: int = Field(gt=0)
+    led_count: int = Field(gt=0)
     pixel_order: str
     spi_enabled: bool
-    pwm_pin: int
-    fps: int
-    fps_static: int
-    commands: list[CommandUnion] = []
-    _path: str | None = PrivateAttr(default=None)
+    pwm_pin: int = Field(gt=0)
+    fps: float = Field(gt=0)
+    fps_static: float = Field(ge=0) # 0 => don't redraw
+    commands: list[CommandUnion]
+    _path: str = PrivateAttr()
 
     @classmethod
     def load(cls, path: str):
