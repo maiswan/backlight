@@ -1,9 +1,11 @@
 from typing import Annotated, Union
-from pydantic import BaseModel, Field, PrivateAttr
+from pydantic import BaseModel, Field, PrivateAttr, ConfigDict
 from .command_union import CommandUnion
 import json
 
 class Config(BaseModel):
+    model_config = ConfigDict(validate_assignment=True)
+
     port: int = Field(gt=0)
     led_count: int = Field(gt=0)
     pixel_order: str
