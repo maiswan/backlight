@@ -5,6 +5,7 @@ from model.state import State
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from routes.config_routes import router as config_router
 from routes.command_routes import router as command_router
 
@@ -22,6 +23,14 @@ app = FastAPI(
     title="Backlight HTTP endpoint",
     description="Control WS2812B LED strip",
     lifespan=lifespan,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["GET", "PUT", "POST", "DELETE"],
+    allow_headers=["*"],
 )
 
 app.include_router(config_router, prefix="/api/v3/config", tags=["config"])
