@@ -38,6 +38,9 @@ async def get_config_stream(request: Request):
 class IntPayload(BaseModel):
     value: int
 
+class FloatPayload(BaseModel):
+    value: float
+
 class StrPayload(BaseModel):
     value: str
 
@@ -131,7 +134,7 @@ async def get_fps(request: Request):
     return state.config.fps
 
 @router.put("/fps", status_code=status.HTTP_204_NO_CONTENT)
-async def put_fps(request: Request, payload: IntPayload = Body(...)):
+async def put_fps(request: Request, payload: FloatPayload = Body(...)):
     state = request.state.state
     try:
         state.config.fps = payload.value
@@ -147,7 +150,7 @@ async def get_fps_static(request: Request):
     return state.config.fps_static
 
 @router.put("/fps_static", status_code=status.HTTP_204_NO_CONTENT)
-async def put_fps_static(request: Request, payload: IntPayload = Body(...)):
+async def put_fps_static(request: Request, payload: FloatPayload = Body(...)):
     state = request.state.state
     try:
         state.config.fps_static = payload.value
