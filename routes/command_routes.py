@@ -5,6 +5,12 @@ from model.command_union import CommandUnion
 
 router = APIRouter()
 
+# POST anything to redraw
+@router.post("/redraw", status_code=status.HTTP_204_NO_CONTENT)
+async def post_redraw(request: Request):
+    state = request.state.state
+    state.initialize_render_task()
+
 # GET all commands
 @router.get("/")
 async def get_all(request: Request):

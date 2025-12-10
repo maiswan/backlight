@@ -79,6 +79,7 @@ backlight also offers remote control through a HTTP API. The routes are as follo
 | `DELETE` | `/api/v3/commands` | Delete all existing commands |
 | `PUT` | `/api/v3/commands/{id_or_name}` | Modify an existing command |
 | `DELETE` | `/api/v3/commands/{id_or_name}` | Delete an existing command |
+| `DELETE` | `/api/v3/commands/redraw` | Restart the render pipeline |
 | `GET` | `/api/v3/config` | Get the current configurations and commands |
 | `GET` | `/api/v3/config/stream` | Get the current configurations and commands via [SSE](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) |
 
