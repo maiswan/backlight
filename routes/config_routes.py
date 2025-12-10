@@ -16,7 +16,7 @@ async def get_stream(state: State):
 
             if now != previous:
                 previous = now
-                dump = state.config.model_dump(mode='json')
+                dump = state.config.model_dump_json()
                 yield f"data: {dump}\n\n"
 
             await asyncio.sleep(1)
