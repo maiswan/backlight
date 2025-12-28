@@ -57,15 +57,20 @@ async def get_command(request: Request, id_or_name: str):
 
 # PUT existing command
 @router.put("/{id_or_name}", status_code=status.HTTP_204_NO_CONTENT)
-async def put_command(request: Request, id_or_name: str, newCommand: CommandUnion = Body(...)):
+async def put_command(request: Request, id_or_name: str):
     state = request.state.state
     for i, command in enumerate(state.config.commands):
         if command.name == id_or_name or command.id == id_or_name:
-            state.config.commands[i] = newCommand
+            
+            body = await request.json()
+            for key, value in body.items():
+                setattr(state.config.commands[i], key, value)
+
             state.config.write()
             state.initialize_render_task()
-    else:
-        raise HTTPException(status_code=404, detail="Command not found")
+            return
+            
+    raise HTTPException(status_code=404, detail="Command not found")
         
 # DELETE existing command
 @router.delete("/{id_or_name}", status_code=status.HTTP_204_NO_CONTENT)
