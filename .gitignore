@@ -5,7 +5,11 @@ config.dev.json
 
 # Pi 5 library
 lg/
-lg.zip
+lg.zip*
+.lgd-nfy0
+rpi_ws2812x/
+test.py
+test.sh
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -1,10 +1,10 @@
 from board import SPI
 from neopixel_spi import NeoPixel_SPI
 from .pixel_base import PixelBase
+import time
 
 class NeoPixelSPI(PixelBase):
 
-    spi = SPI()
     _pixels: NeoPixel_SPI
 
     @property
@@ -25,9 +25,9 @@ class NeoPixelSPI(PixelBase):
     def brightness(self, value: float):
         self._pixels.brightness = value
 
-    def __init__(self, pin: int, count: int, pixel_order: str):
+    def __init__(self, count: int, pixel_order: str):
         self._pixels = NeoPixel_SPI(
-            self.spi,
+            SPI(),
             count,
             pixel_order=pixel_order,
             auto_write=False
