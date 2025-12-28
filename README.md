@@ -70,16 +70,17 @@ backlight will read and use the first available configuration file from `config.
 
 backlight also offers remote control through a HTTP API. The routes are as follows:
 
-| Request | Path | Functionality |
-|---------|------|---------------|
+| Method | Route | Behavior |
+|--------|-------|----------|
 | `GET` | `/dashboard` | Dashboard and controller &mdash; requires [maiswan/backlight-dashboard](https://github.com/maiswan/backlight-dashboard) |
 | `GET` | `/api/v3/commands` | Get the current commands |
 | `POST` | `/api/v3/commands` | Create a new command |
 | `PUT` | `/api/v3/commands` | Replace all existing commands with the payload |
 | `DELETE` | `/api/v3/commands` | Delete all existing commands |
+| `GET` | `/api/v3/commands/{id_or_name}` | Retrieve an existing command |
 | `PUT` | `/api/v3/commands/{id_or_name}` | Modify an existing command |
 | `DELETE` | `/api/v3/commands/{id_or_name}` | Delete an existing command |
-| `DELETE` | `/api/v3/commands/redraw` | Restart the render pipeline |
+| `POST` | `/api/v3/commands/redraw` | Restart the render pipeline |
 | `GET` | `/api/v3/config` | Get the current configurations and commands |
 | `GET` | `/api/v3/config/stream` | Get the current configurations and commands via [SSE](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) |
 
