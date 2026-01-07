@@ -1,22 +1,23 @@
 import asyncio
 import copy
 import json
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, status, Request, HTTPException
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel, Field
-from model.state import state
+from pydantic import BaseModel, Field, ValidationError
+from model.state import State
 
 router = APIRouter()
 
-async def get_stream():
+async def get_stream(state: State):
     previous = None
     try:
-        while not state.stop_event.is_set():
+        while True:
             now = copy.deepcopy(state.config)
 
             if now != previous:
                 previous = now
-                yield f"data: {json.dumps(now.to_dict())}\n\n"
+                dump = state.config.model_dump_json()
+                yield f"data: {dump}\n\n"
 
             await asyncio.sleep(1)
     except asyncio.CancelledError:
@@ -24,88 +25,136 @@ async def get_stream():
 
 # GET overview
 @router.get("/")
-async def get_config():
-    return state.config.to_dict()
+async def get_config(request: Request):
+    state = request.state.state
+    return state.config.model_dump(mode='json')
 
 @router.get("/stream")
-async def get_config_stream():
-    return StreamingResponse(get_stream(), media_type="text/event-stream")
-
+async def get_config_stream(request: Request):
+    state = request.state.state
+    return StreamingResponse(get_stream(state), media_type="text/event-stream")
 
 # Payload
 class IntPayload(BaseModel):
-    value: int = Field(..., ge=0)
+    value: int
+
+class FloatPayload(BaseModel):
+    value: float
 
 class StrPayload(BaseModel):
     value: str
 
+class BoolPayload(BaseModel):
+    value: bool
+
+# port
+@router.get("/port")
+async def get_port(request: Request):
+    state = request.state.state
+    return state.config.port
+
+@router.put("/port", status_code=status.HTTP_204_NO_CONTENT)
+async def put_led_count(request: Request, payload: IntPayload = Body(...)):
+    state = request.state.state
+    try:
+        state.config.port = payload.value
+        state.config.write()
+    except ValidationError as error:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error))
+
 # led_count
 @router.get("/led_count")
-async def get_led_count():
+async def get_led_count(request: Request):
+    state = request.state.state
     return state.config.led_count
 
-@router.put("/led_count")
-async def put_led_count(payload: IntPayload = Body(...)):
-    state.config.led_count = payload.value
-    state.initialize_pixels()
-    state.write_config()
-    return {"detail": "changed"}
+@router.put("/led_count", status_code=status.HTTP_204_NO_CONTENT)
+async def put_led_count(request: Request, payload: IntPayload = Body(...)):
+    state = request.state.state
+    try:
+        state.config.led_count = payload.value
+        state.initialize_pixels()
+        state.config.write()
+    except ValidationError as error:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error))
+
 
 # pixel_order
 @router.get("/pixel_order")
-async def get_pixel_order():
+async def get_pixel_order(request: Request):
+    state = request.state.state
     return state.config.pixel_order
 
-@router.put("/pixel_order")
-async def put_pixel_order(payload: StrPayload = Body(...)):
-    state.config.pixel_order = payload.value
-    state.initialize_pixels()
-    state.write_config()
-    return {"detail": "changed"}
+@router.put("/pixel_order", status_code=status.HTTP_204_NO_CONTENT)
+async def put_pixel_order(request: Request, payload: StrPayload = Body(...)):
+    state = request.state.state
+    try:
+        state.config.pixel_order = payload.value
+        state.initialize_pixels()
+        state.config.write()
+    except ValidationError as error:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error))
 
-# gpio_pin
-@router.get("/gpio_pin")
-async def get_gpio_pin():
-    return state.config.gpio_pin
+# pixel_order
+@router.get("/spi_enabled")
+async def get_spi_enabled(request: Request):
+    state = request.state.state
+    return state.config.pixel_order
 
-@router.put("/gpio_pin")
-async def put_gpio_pin(payload: IntPayload = Body(...)):
-    state.config.gpio_pin = payload.value
-    state.initialize_pixels()
-    state.write_config()
-    return {"detail": "changed"}
+@router.put("/spi_enabled", status_code=status.HTTP_204_NO_CONTENT)
+async def put_spi_enabled(request: Request, payload: BoolPayload = Body(...)):
+    state = request.state.state
+    try:
+        state.config.spi_enabled = payload.value
+        state.initialize_pixels()
+        state.config.write()
+    except ValidationError as error:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error))
 
+# pwm_pin
+@router.get("/pwm_pin")
+async def get_pwm_pin(request: Request):
+    state = request.state.state
+    return state.config.pwm_pin
 
-# gpio_pin
+@router.put("/pwm_pin", status_code=status.HTTP_204_NO_CONTENT)
+async def put_pwm_pin(request: Request, payload: IntPayload = Body(...)):
+    state = request.state.state
+    try:
+        state.config.pwm_pin = payload.value
+        state.initialize_pixels()
+        state.config.write()
+    except ValidationError as error:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error))
+
+# pwm_pin
 @router.get("/fps")
-async def get_fps():
+async def get_fps(request: Request):
+    state = request.state.state
     return state.config.fps
 
-@router.put("/fps")
-async def put_fps(payload: IntPayload = Body(...)):
-    state.config.fps = payload.value
-    state.write_config()
-    return {"detail": "changed"}
+@router.put("/fps", status_code=status.HTTP_204_NO_CONTENT)
+async def put_fps(request: Request, payload: FloatPayload = Body(...)):
+    state = request.state.state
+    try:
+        state.config.fps = payload.value
+        state.config.write()
+        state.initialize_render_task()
+    except ValidationError as error:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error))
 
-# fps_all_static_commands
-@router.get("/fps_all_static_commands")
-async def get_fps_all_static_commands():
-    return state.config.fps_all_static_commands
+# fps_static
+@router.get("/fps_static")
+async def get_fps_static(request: Request):
+    state = request.state.state
+    return state.config.fps_static
 
-@router.put("/fps_all_static_commands")
-async def put_fps_all_static_commands(payload: IntPayload = Body(...)):
-    state.config.fps_all_static_commands = payload.value
-    state.write_config()
-    return {"detail": "changed"}
-
-# force_rerender_gpio_pin
-@router.get("/force_rerender_gpio_pin")
-async def get_force_rerender_gpio_pin():
-    return state.config.force_rerender_gpio_pin
-
-@router.put("/force_rerender_gpio_pin")
-async def put_force_rerender_gpio_pin(payload: IntPayload = Body(...)):
-    state.config.force_rerender_gpio_pin = payload.value
-    state.write_config()
-    state.initialize_force_render_task()
-    return {"detail": "changed"}
+@router.put("/fps_static", status_code=status.HTTP_204_NO_CONTENT)
+async def put_fps_static(request: Request, payload: FloatPayload = Body(...)):
+    state = request.state.state
+    try:
+        state.config.fps_static = payload.value
+        state.config.write()
+        state.initialize_render_task()
+    except ValidationError as error:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error))

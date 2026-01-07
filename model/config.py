@@ -1,33 +1,38 @@
-# from typing import Union
 from typing import Annotated, Union
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, PrivateAttr, ConfigDict
+from .command_union import CommandUnion
+import json
 
-from model.command.alpha import AlphaCommandUnion
-from model.command.color import ColorCommandUnion
-from model.command.gamma import GammaCommandUnion
-
-commandUnion = Annotated[
-    Union[AlphaCommandUnion, ColorCommandUnion, GammaCommandUnion],
-    Field(discriminator="mode")
-]
-
-# Main config model
 class Config(BaseModel):
-    led_count: int
-    pixel_order: str
-    gpio_pin: int
-    fps: int
-    fps_all_static_commands: int
-    force_rerender_gpio_pin: int
-    commands: list[commandUnion] = []
+    model_config = ConfigDict(validate_assignment=True)
 
-    def to_dict(self):
-        return {
-            'led_count': self.led_count,
-            'pixel_order': self.pixel_order,
-            'gpio_pin': self.gpio_pin,
-            'fps': self.fps,
-            'fps_all_static_commands': self.fps_all_static_commands,
-            'force_rerender_gpio_pin': self.force_rerender_gpio_pin,
-            'commands': [instr.model_dump(mode='json') for instr in self.commands],
-        }
+    port: int = Field(gt=0)
+    led_count: int = Field(gt=0)
+    pixel_order: str
+    spi_enabled: bool
+    pwm_pin: int = Field(gt=0)
+    fps: float = Field(gt=0)
+    fps_static: float = Field(ge=0) # 0 => don't redraw
+    commands: list[CommandUnion]
+    _path: str = PrivateAttr()
+
+    @classmethod
+    def load(cls, path: str):
+        with open(path, 'r') as f:
+            data = json.load(f)
+
+        config = cls.model_validate(data)
+        config._path = path
+        return config
+
+    def write(self, path: str | None = None):
+        if path is None:
+            path = self._path
+
+        if path is None:
+            raise ValueError("No path specified for writing config")
+
+        model_dump = self.model_dump(mode='json')
+
+        with open(path, 'w') as f:
+            json.dump(model_dump, f, indent=4)

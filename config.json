@@ -1,75 +1,61 @@
 {
-    "led_count": 144,
-    "pixel_order": "GRB",
-    "gpio_pin": 18,
-    "fps": 1,
-    "fps_all_static_commands": 0,
-    "force_rerender_gpio_pin": 4,
+    "port": 12021,
+    "led_count": 96,
+    "pixel_order": "GRBW",
+    "spi_enabled": false,
+    "pwm_pin": 10,
+    "fps": 30,
+    "fps_static": 0,
     "commands": [
         {
-            "mode": "color_static_kelvin",
-            "id": "5826370a-78d7-473e-a95c-d718a11ec0ba",
-            "name": "Kelvin",
+            "mode": "source_rainbow_rolling",
+            "id": "2e89a849-63cf-483d-ba65-2a8ccd139845",
+            "name": "",
             "z_index": 0,
+            "alpha": 1.0,
             "targets": "",
             "is_enabled": true,
-            "kelvin": 4000
+            "blend": "normal",
+            "period": 4000,
+            "wavelength": 96,
+            "saturation": 1.0,
+            "propagation": 1
         },
         {
-            "mode": "color_static_hsv",
-            "id": "57e08bcf-7023-4ce2-b775-295a9faae281",
-            "name": "\u7121\u9650\u306e\u65c5\u3001\u50d5\u3089\u306e\u9078\u629e",
-            "z_index": 10,
-            "targets": "",
-            "is_enabled": false,
-            "hue": 130,
-            "saturation": 0.4,
-            "value": 0.75
-        },
-        {
-            "mode": "gamma_static",
-            "id": "419c74af-8ce9-4de9-a505-40c5b93e3356",
-            "name": "Top \u03b3=2.4",
-            "z_index": 20,
-            "targets": "0-71",
-            "is_enabled": true,
-            "gamma": 2.4
-        },
-        {
-            "mode": "alpha_static",
-            "id": "c24b10a2-2121-4778-8701-fe3599dcb6f5",
-            "name": "Top \u03b1=0.4",
-            "z_index": 30,
-            "targets": "0-71",
-            "is_enabled": true,
-            "alpha": 0.4
-        },
-        {
-            "mode": "gamma_static",
-            "id": "cdd87bce-9641-4cb8-9254-a12fab4d091d",
-            "name": "Bottom \u03b3=2.0",
-            "z_index": 40,
-            "targets": "72-143",
-            "is_enabled": true,
-            "gamma": 2.0
-        },
-        {
-            "mode": "alpha_static",
-            "id": "c24b10a2-2121-4778-8701-fe3599dcb6f6",
-            "name": "Bottom \u03b1=0.05",
-            "z_index": 50,
-            "targets": "72-143",
-            "is_enabled": true,
-            "alpha": 0.05
-        },
-        {
-            "mode": "alpha_static",
-            "id": "69da8cd0-56b6-4b64-ac86-b8374326b716",
-            "name": "global alpha",
-            "z_index": 60,
+            "mode": "transform_brightness_rolling",
+            "id": "a7848b8c-79bf-4db7-b9c1-ac2a978eb4ec",
+            "name": "",
+            "z_index": 0,
+            "alpha": 1.0,
             "targets": "",
             "is_enabled": true,
-            "alpha": 0.1
+            "min_brightness": 0.0,
+            "max_brightness": 0.3,
+            "period": 4000,
+            "wavelength": 96,
+            "propagation": 0
+        },
+        {
+            "mode": "transform_gamma",
+            "id": "e0ccf7da-465c-4ec2-823d-174861e16d56",
+            "name": "",
+            "z_index": 0,
+            "alpha": 1.0,
+            "targets": "",
+            "is_enabled": true,
+            "gamma": 2.2
+        },
+        {
+            "mode": "transform_dithering",
+            "id": "e0ccf7da-465c-4ec2-823d-174861e16d56",
+            "name": "",
+            "z_index": 0,
+            "alpha": 1.0,
+            "targets": "",
+            "is_enabled": true,
+            "min_red": 1,
+            "min_green": 1,
+            "min_blue": 1
         }
     ]
 }
