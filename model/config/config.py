@@ -1,19 +1,17 @@
 from typing import Annotated, Union
 from pydantic import BaseModel, Field, PrivateAttr, ConfigDict
-from .command_union import CommandUnion
+from ..command_union import CommandUnion
+from .led_config import LedConfig
+from .renderer_config import RendererConfig
+from .server_config import ServerConfig
 import json
 
 class Config(BaseModel):
     model_config = ConfigDict(validate_assignment=True)
 
-    port: int = Field(gt=0)
-    led_count: int = Field(gt=0)
-    pixel_order: str
-    spi_enabled: bool
-    pwm_pin: int = Field(gt=0)
-    fps: float = Field(gt=0)
-    fps_static: float = Field(ge=0)          # 0 => don't redraw
-    transition_duration: float = Field(ge=0) # 0 => no transition
+    server: ServerConfig
+    leds: LedConfig
+    renderer: RendererConfig
     commands: list[CommandUnion]
     _path: str = PrivateAttr()
 

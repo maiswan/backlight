@@ -6,8 +6,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from routes.config_routes import router as config_router
-from routes.command_routes import router as command_router
+from routes import server_router, led_router, renderer_router, command_router, home_router
 
 state = State()
 
@@ -33,8 +32,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(config_router, prefix="/api/v3/config", tags=["config"])
-app.include_router(command_router, prefix="/api/v3/commands", tags=["commands"])
+app.include_router(server_router, prefix="/api/v4/server", tags=["server"])
+app.include_router(led_router, prefix="/api/v4/leds", tags=["leds"])
+app.include_router(renderer_router, prefix="/api/v4/renderer", tags=["renderer"])
+app.include_router(command_router, prefix="/api/v4/commands", tags=["commands"])
+app.include_router(home_router, prefix="/api/v4", tags=["home"])
 app.mount("/dashboard", StaticFiles(directory="dashboard/dist", html=True))
 
 @app.get("/")
@@ -43,4 +45,4 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=state.config.port)
+    uvicorn.run("main:app", host="0.0.0.0", port=state.config.server.port)
