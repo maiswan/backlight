@@ -10,6 +10,7 @@ class State:
     config: Config
     render_task: Task | None = None
     pixels: PixelBase
+    buffer: list[tuple[float, float, float]] | list[tuple[float, float, float, float]] | None = None
 
     def initialize_render_task(self):
         if (self.render_task): self.render_task.cancel()
@@ -31,28 +32,49 @@ class State:
     async def _render_loop(self):
         needs_rgbw = "W" in self.config.pixel_order  
 
-        # First frame
-        is_static, buffer = self._render(needs_rgbw)
-        self._redraw(buffer)
-        
+        # Populate buffer if None
+        is_static = False
+
+        if self.buffer is None:
+            is_static, self.buffer = self._render(needs_rgbw)
+
+        # Transition
+        if self.config.transition_duration > 0:
+            interval = self.config.transition_duration / self.config.fps
+            frames = int(self.config.fps * self.config.transition_duration)
+
+            ALPHA = 0.125 # EMA parameter
+            new_buffer = None
+
+            for i in range(frames):
+                # If the new buffer changes during transition (e.g., rainbow), rerender the new buffer for EMA
+                if not is_static or new_buffer is None:
+                    _, new_buffer = self._render(needs_rgbw)
+
+                Renderer.transit_exponential(self.buffer, new_buffer, ALPHA, self.config.led_count)
+
+                self._redraw(self.buffer)
+                await asyncio.sleep(interval)
+
         # Fast exit if the user doesn't want to rerender static content
         if (is_static and self.config.fps_static <= 0):
+            self._redraw(self.buffer)
             return
-
+            
         # Redraw every frame
         if is_static:
             # STATIC: no rerender, just redraw
             interval = 1.0 / self.config.fps_static
             while True:
                 await asyncio.sleep(interval)
-                self._redraw(buffer)
+                self._redraw(self.buffer)
                 
         # ANIMATED: rerender then redraw
         interval = 1.0 / self.config.fps
         while True:
             await asyncio.sleep(interval)
-            _, buffer = self._render(needs_rgbw)
-            self._redraw(buffer)
+            _, self.buffer = self._render(needs_rgbw)
+            self._redraw(self.buffer)
 
     def _get_config_path(self):
         CONFIG_PATHS = [

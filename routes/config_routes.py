@@ -158,3 +158,20 @@ async def put_fps_static(request: Request, payload: FloatPayload = Body(...)):
         state.initialize_render_task()
     except ValidationError as error:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error))
+
+
+# transition_duration
+@router.get("/transition_duration")
+async def get_transition_duration(request: Request):
+    state = request.state.state
+    return state.config.transition_duration
+
+@router.put("/transition_duration", status_code=status.HTTP_204_NO_CONTENT)
+async def put_transition_duration(request: Request, payload: FloatPayload = Body(...)):
+    state = request.state.state
+    try:
+        state.config.transition_duration = payload.value
+        state.config.write()
+        state.initialize_render_task()
+    except ValidationError as error:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error))

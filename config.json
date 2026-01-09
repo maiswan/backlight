@@ -6,6 +6,7 @@
     "pwm_pin": 10,
     "fps": 30,
     "fps_static": 0,
+    "transition_duration": 0.5,
     "commands": [
         {
             "mode": "source_rainbow_rolling",

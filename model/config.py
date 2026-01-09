@@ -12,7 +12,8 @@ class Config(BaseModel):
     spi_enabled: bool
     pwm_pin: int = Field(gt=0)
     fps: float = Field(gt=0)
-    fps_static: float = Field(ge=0) # 0 => don't redraw
+    fps_static: float = Field(ge=0)          # 0 => don't redraw
+    transition_duration: float = Field(ge=0) # 0 => no transition
     commands: list[CommandUnion]
     _path: str = PrivateAttr()
 

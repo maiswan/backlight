@@ -17,11 +17,11 @@ class Renderer:
         return (tuple[0] * 255, tuple[1] * 255, tuple[2] * 255)
 
     @staticmethod
-    def render(commands: CommandUnion, led_count: int, need_rgbw_conversion: bool):
+    def render(commands: CommandUnion, buffer_length: int, need_rgbw_conversion: bool):
         now = time.monotonic()
         is_static = True
         commands.sort(key=lambda x: x.z_index)
-        buffer = [(0.0, 0.0, 0.0)] * led_count
+        buffer = [(0.0, 0.0, 0.0)] * buffer_length
     
         for command in commands:
             if (not command.is_enabled):
@@ -31,13 +31,13 @@ class Renderer:
             try:
                 # Compute buffer
                 new_buffer = buffer[:]
-                command.execute(new_buffer, led_count, now)
+                command.execute(new_buffer, buffer_length, now)
 
                 # Blend
                 # Transform commands do not support the blend property (since it doesn't really makes sense)
                 blend_mode = command.blend if "source" in command.mode else BlendMode.NORMAL
 
-                for index in command.get_targets(led_count):
+                for index in command.get_targets(buffer_length):
                     buffer[index] = Blender.blend(
                         buffer[index],
                         new_buffer[index],
@@ -53,3 +53,19 @@ class Renderer:
             buffer[i] = scale(buffer[i])
 
         return (is_static, buffer)
+
+    @staticmethod
+    def transit_exponential(
+        old_buffer: list[tuple[float, float, float]] | list[tuple[float, float, float, float]], 
+        new_buffer: list[tuple[float, float, float]] | list[tuple[float, float, float, float]],
+        alpha: float,
+        buffer_length: int
+    ):
+        for i in range(buffer_length):
+            old_tuple = old_buffer[i]
+            new_tuple = new_buffer[i]
+
+            old_buffer[i] = tuple(
+                (1 - alpha) * old + alpha * new
+                for old, new in zip(old_tuple, new_tuple)
+            )
