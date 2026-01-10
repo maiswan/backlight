@@ -2,9 +2,11 @@ from asyncio import Task
 import asyncio
 import os
 import time
+import math
 from .pixels.pixel_base import PixelBase
 from .config.config import Config
 from .renderer.renderer import Renderer
+from .renderer.transitioner import Transitioner, EasingMode
 
 class State:
     config: Config
@@ -31,6 +33,7 @@ class State:
                 
     async def _render_loop(self):
         needs_rgbw = "W" in self.config.leds.pixel_order  
+        config = self.config.renderer
 
         # Populate buffer if None
         is_static = False
@@ -39,38 +42,40 @@ class State:
             is_static, self.buffer = self._render(needs_rgbw)
 
         # Transition
-        if self.config.renderer.transitions.duration > 0:
-            interval = self.config.renderer.transitions.duration / self.config.renderer.framerate.active
-            frames = int(self.config.renderer.framerate.active * self.config.renderer.transitions.duration)
-
-            ALPHA = 0.125 # EMA parameter
+        if config.transitions.duration > 0:
+            interval = 1 / config.framerate.active
+            progress = 0
+            old_buffer = self.buffer
             new_buffer = None
+            start_time = time.monotonic()
 
-            for i in range(frames):
-                # If the new buffer changes during transition (e.g., rainbow), rerender the new buffer for EMA
+            while progress < 1:
+                progress = (time.monotonic() - start_time) / config.transitions.duration
+
                 if not is_static or new_buffer is None:
                     _, new_buffer = self._render(needs_rgbw)
-
-                Renderer.transit_exponential(self.buffer, new_buffer, ALPHA, self.config.leds.count)
-
+                    
+                self.buffer = Transitioner.transit(old_buffer, new_buffer, progress, config.transitions.mode)
+                
                 self._redraw(self.buffer)
                 await asyncio.sleep(interval)
-
-        # Fast exit if the user doesn't want to rerender static content
-        if (is_static and self.config.renderer.framerate.idle <= 0):
+        
+        # Fast exit if the user doesn't want to rerender static content repeatedly
+        if (is_static and config.framerate.idle <= 0):
+            _, self.buffer = self._render(needs_rgbw)
             self._redraw(self.buffer)
             return
             
         # Redraw every frame
         if is_static:
             # STATIC: no rerender, just redraw
-            interval = 1.0 / self.config.renderer.framerate.idle
+            interval = 1.0 / config.framerate.idle
             while True:
                 await asyncio.sleep(interval)
                 self._redraw(self.buffer)
                 
         # ANIMATED: rerender then redraw
-        interval = 1.0 / self.config.renderer.framerate.active
+        interval = 1.0 / config.framerate.active
         while True:
             await asyncio.sleep(interval)
             _, self.buffer = self._render(needs_rgbw)

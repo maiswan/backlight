@@ -53,19 +53,3 @@ class Renderer:
             buffer[i] = scale(buffer[i])
 
         return (is_static, buffer)
-
-    @staticmethod
-    def transit_exponential(
-        old_buffer: list[tuple[float, float, float]] | list[tuple[float, float, float, float]], 
-        new_buffer: list[tuple[float, float, float]] | list[tuple[float, float, float, float]],
-        alpha: float,
-        buffer_length: int
-    ):
-        for i in range(buffer_length):
-            old_tuple = old_buffer[i]
-            new_tuple = new_buffer[i]
-
-            old_buffer[i] = tuple(
-                (1 - alpha) * old + alpha * new
-                for old, new in zip(old_tuple, new_tuple)
-            )

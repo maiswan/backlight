@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Body, status, Request, HTTPException
 from pydantic import ValidationError
 from model.state import State
-from .payloads import FloatPayload
+from model.renderer.transitioner import EasingMode
+from .payloads import FloatPayload, StrPayload
 
 router = APIRouter()
 
@@ -53,3 +54,20 @@ async def put_transitions_duration(request: Request, payload: FloatPayload = Bod
         state.initialize_render_task()
     except ValidationError as error:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error))
+
+# transitions/mode
+@router.get("/transitions/mode")
+async def get_transitions_duration(request: Request):
+    state = request.state.state
+    return state.config.renderer.transitions.mode
+
+@router.put("/transitions/mode", status_code=status.HTTP_204_NO_CONTENT)
+async def put_transitions_duration(request: Request, payload: StrPayload = Body(...)):
+    state = request.state.state
+    try:
+        state.config.renderer.transitions.mode = EasingMode(payload.value)
+        state.config.write()
+        state.initialize_render_task()
+    except ValidationError as error:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error))
+
