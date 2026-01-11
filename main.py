@@ -6,7 +6,11 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from routes import server_router, led_router, renderer_router, command_router, home_router
+from routes.server_routes import router as server_router
+from routes.led_routes import router as led_router
+from routes.renderer_routes import router as renderer_router
+from routes.command_routes import router as command_router
+from routes.home_routes import router as home_router
 
 state = State()
 
