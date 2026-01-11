@@ -268,29 +268,29 @@ class Blender:
     
     @staticmethod
     def hue(bottom: tuple[float, float, float], top: tuple[float, float, float]):
-        bottom_hsl = rgbToHsl(bottom)
-        top_hsl = rgbToHsl(top)
+        bottom_hsl = rgbToHsl(bottom[0], bottom[1], bottom[2])
+        top_hsl = rgbToHsl(top[0], top[1], top[2])
 
         return HslToRgb(top_hsl[0], bottom_hsl[1], bottom_hsl[2])
         
     @staticmethod
     def saturation(bottom: tuple[float, float, float], top: tuple[float, float, float]):
-        bottom_hsl = rgbToHsl(bottom)
-        top_hsl = rgbToHsl(top)
+        bottom_hsl = rgbToHsl(bottom[0], bottom[1], bottom[2])
+        top_hsl = rgbToHsl(top[0], top[1], top[2])
 
         return HslToRgb(bottom_hsl[0], top_hsl[1], bottom_hsl[2])
 
     @staticmethod
     def color(bottom: tuple[float, float, float], top: tuple[float, float, float]):
-        bottom_hsl = rgbToHsl(bottom)
-        top_hsl = rgbToHsl(top)
+        bottom_hsl = rgbToHsl(bottom[0], bottom[1], bottom[2])
+        top_hsl = rgbToHsl(top[0], top[1], top[2])
 
         return HslToRgb(top_hsl[0], top_hsl[1], bottom_hsl[2])
 
     @staticmethod
     def luminosity(bottom: tuple[float, float, float], top: tuple[float, float, float]):
-        bottom_hsl = rgbToHsl(bottom)
-        top_hsl = rgbToHsl(top)
+        bottom_hsl = rgbToHsl(bottom[0], bottom[1], bottom[2])
+        top_hsl = rgbToHsl(top[0], top[1], top[2])
 
         return HslToRgb(bottom_hsl[0], bottom_hsl[1], top_hsl[2])
         
