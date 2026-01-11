@@ -56,7 +56,7 @@ class State:
                     _, new_buffer = self._render(needs_rgbw)
                     
                 self.buffer = Transitioner.transit(old_buffer, new_buffer, progress, config.transitions.mode)
-                
+
                 self._redraw(self.buffer)
                 await asyncio.sleep(interval)
         
@@ -114,7 +114,7 @@ class State:
             
         from .pixels.pwm import NeoPixelPWM
         self.pixels = NeoPixelGPIO(
-            self.config.leds.transport.pwm.pwm_pin,
+            self.config.leds.transport.pwm.pin,
             self.config.leds.count,
             self.config.leds.pixel_order,
         )
