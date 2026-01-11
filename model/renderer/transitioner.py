@@ -72,12 +72,7 @@ class Transitioner:
 
         output = []
 
-        length = max(len(old_buffer), len(new_buffer))
-
-        for i in range(length):
-            old_tuple = old_buffer[i] if i < len(old_buffer) else (0, 0, 0, 0)
-            new_tuple = new_buffer[i] if i < len(new_buffer) else (0, 0, 0, 0)
-
+        for old_tuple, new_tuple in zip(old_buffer, new_buffer):
             output.append(tuple(
                 (1 - y) * old + y * new
                 for old, new in zip(old_tuple, new_tuple)
