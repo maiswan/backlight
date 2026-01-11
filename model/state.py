@@ -20,8 +20,7 @@ class State:
         self.render_task = loop.create_task(self._render_loop())
 
     def _redraw(self, buffer: list[tuple[float, float, float]] | list[tuple[float, float, float, float]]):
-        for i in range(self.config.leds.count):
-            self.pixels[i] = buffer[i]
+        self.pixels[:] = buffer
         self.pixels.show()
 
     def _render(self, needs_rgbw: bool):
