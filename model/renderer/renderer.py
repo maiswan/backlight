@@ -20,15 +20,13 @@ class Renderer:
     @staticmethod
     def render(commands: CommandUnion, buffer_length: int, need_rgbw_conversion: bool):
         now = time.monotonic()
-        is_static = True
-        commands.sort(key=lambda x: x.z_index)
+
+        enabled_commands = sorted([ x for x in commands if x.is_enabled], key=lambda x: x.z_index)
+        is_static = all(x.is_static for x in enabled_commands)
+        
         buffer = [(0.0, 0.0, 0.0)] * buffer_length
     
-        for command in commands:
-            if (not command.is_enabled):
-                continue
-
-            is_static = is_static and command.is_static
+        for command in enabled_commands:
             try:
                 # Compute buffer
                 new_buffer = buffer[:]
