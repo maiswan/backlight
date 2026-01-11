@@ -1,7 +1,9 @@
 from enum import Enum, auto
 import random
 from math import sqrt
+from typing import Iterable
 from .rgbToHsl import rgbToHsl, HslToRgb
+from ..buffer_types import RgbTuple, RgbBuffer
 
 class BlendMode(Enum):
     # Normal group
@@ -45,7 +47,7 @@ class BlendMode(Enum):
 class Blender:
 
     @staticmethod
-    def blend(bottom: tuple[float, float, float], top: tuple[float, float, float], mode: BlendMode, alpha: float):
+    def blend(bottom_buffer: RgbBuffer, top_buffer: RgbBuffer, indices: Iterable[int], mode: BlendMode, alpha: float):
         
         blend_modes = {
             BlendMode.NORMAL: Blender.normal,
@@ -77,11 +79,16 @@ class Blender:
         }
 
         function = blend_modes[mode]
-        blended = function(bottom, top)
-        r = bottom[0] * (1 - alpha) + blended[0] * alpha
-        g = bottom[1] * (1 - alpha) + blended[1] * alpha
-        b = bottom[2] * (1 - alpha) + blended[2] * alpha
-        return (r, g, b)
+        for i in indices:
+            blended = function(bottom_buffer[i], top_buffer[i])
+
+            bottom_buffer[i] = (
+                bottom_buffer[i][0] * (1 - alpha) + blended[0] * alpha,
+                bottom_buffer[i][1] * (1 - alpha) + blended[1] * alpha,
+                bottom_buffer[i][2] * (1 - alpha) + blended[2] * alpha,
+            )
+
+            
 
     @staticmethod
     def luminance(rgb: tuple[float, float, float]):

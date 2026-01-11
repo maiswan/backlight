@@ -36,15 +36,8 @@ class Renderer:
                 # Blend
                 # Transform commands do not support the blend property (since it doesn't really makes sense)
                 blend_mode = command.blend if "source" in command.mode else BlendMode.NORMAL
+                Blender.blend(buffer, new_buffer, command.target_indices, blend_mode, command.alpha)
                 
-                for index in command.target_indices:
-                    buffer[index] = Blender.blend(
-                        buffer[index],
-                        new_buffer[index],
-                        blend_mode,
-                        command.alpha
-                    )
-
             except Exception as exception:
                 print(exception)
 
