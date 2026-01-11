@@ -1,10 +1,11 @@
 from ..command_union import CommandUnion
 from .blender import Blender, BlendMode
+from ..buffer_types import RgbTuple
 import time
 
 class Renderer:
     @staticmethod
-    def toRgbwTuple(tuple: tuple[float, float, float]):
+    def toRgbwTuple(tuple: RgbTuple):
         white = min(tuple[0], tuple[1], tuple[2])
         red = (tuple[0] - white) * 255
         green = (tuple[1] - white) * 255
@@ -13,7 +14,7 @@ class Renderer:
         return (red, green, blue, white)
 
     @staticmethod
-    def toRgbTuple(tuple: tuple[float, float, float]):
+    def toRgbTuple(tuple: RgbTuple):
         return (tuple[0] * 255, tuple[1] * 255, tuple[2] * 255)
 
     @staticmethod
@@ -37,7 +38,7 @@ class Renderer:
                 # Transform commands do not support the blend property (since it doesn't really makes sense)
                 blend_mode = command.blend if "source" in command.mode else BlendMode.NORMAL
                 Blender.blend(buffer, new_buffer, command.target_indices, blend_mode, command.alpha)
-                
+
             except Exception as exception:
                 print(exception)
 
