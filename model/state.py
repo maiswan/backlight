@@ -7,19 +7,20 @@ from .pixels.pixel_base import PixelBase
 from .config.config import Config
 from .renderer.renderer import Renderer
 from .renderer.transitioner import Transitioner, EasingMode
+from .buffer_types import RgbBuffer, RgbwBuffer
 
 class State:
     config: Config
     render_task: Task | None = None
     pixels: PixelBase
-    buffer: list[tuple[float, float, float]] | list[tuple[float, float, float, float]] | None = None
+    buffer: RgbBuffer | RgbwBuffer | None = None
 
     def initialize_render_task(self):
         if (self.render_task): self.render_task.cancel()
         loop = asyncio.get_event_loop()
         self.render_task = loop.create_task(self._render_loop())
 
-    def _redraw(self, buffer: list[tuple[float, float, float]] | list[tuple[float, float, float, float]]):
+    def _redraw(self, buffer: RgbBuffer | RgbwBuffer):
         self.pixels[:] = buffer
         self.pixels.show()
 

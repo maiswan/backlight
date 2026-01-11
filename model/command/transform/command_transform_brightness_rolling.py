@@ -2,6 +2,7 @@ from typing import Iterable, List, Literal
 from pydantic import Field, model_validator
 from math import sin
 from ..command_base import CommandBase
+from ...buffer_types import RgbBuffer
 
 class CommandTransformBrightnessRolling(CommandBase):
     mode: Literal["transform_brightness_rolling"] = "transform_brightness_rolling"
@@ -12,7 +13,7 @@ class CommandTransformBrightnessRolling(CommandBase):
     propagation: int = Field(ge=0, le=1, default=1)
     is_static = False
 
-    def _compute(self, buffer: List[tuple[float, float, float]], targets: Iterable[int], time: float):
+    def _compute(self, buffer: RgbBuffer, targets: Iterable[int], time: float):
         direction = -1 if self.propagation == 0 else 1
 
         for (index, i) in enumerate(targets):

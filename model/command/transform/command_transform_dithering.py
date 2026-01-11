@@ -1,6 +1,7 @@
 from typing import Iterable, List, Literal
 from pydantic import Field, model_validator
 from ..command_base import CommandBase
+from ...buffer_types import RgbBuffer
 
 class CommandTransformDithering(CommandBase):
     mode: Literal["transform_dithering"] = "transform_dithering"
@@ -9,7 +10,7 @@ class CommandTransformDithering(CommandBase):
     min_blue: int = Field(ge=1, default=1)
     is_static = True
 
-    def _compute(self, buffer: List[tuple[float, float, float]], targets: Iterable[int], time: float):
+    def _compute(self, buffer: RgbBuffer, targets: Iterable[int], time: float):
         threshold_red = self.min_red / 255
         threshold_green = self.min_green / 255
         threshold_blue = self.min_blue / 255

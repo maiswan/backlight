@@ -1,5 +1,6 @@
 from enum import Enum, auto
 import math
+from ..buffer_types import RgbBuffer, RgbwBuffer 
 
 class EasingMode(Enum):
     LINEAR = "linear"
@@ -37,8 +38,8 @@ class Transitioner:
 
     @staticmethod
     def transit(
-        old_buffer: list[tuple[float, float, float]] | list[tuple[float, float, float, float]], 
-        new_buffer: list[tuple[float, float, float]] | list[tuple[float, float, float, float]],
+        old_buffer: RgbBuffer | RgbwBuffer, 
+        new_buffer: RgbBuffer | RgbwBuffer,
         progress: float,
         mode: EasingMode
     ):

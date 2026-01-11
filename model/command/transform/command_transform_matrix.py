@@ -1,6 +1,7 @@
 from typing import Iterable, List, Literal
 from pydantic import Field, model_validator
 from ..command_base import CommandBase
+from ...buffer_types import RgbBuffer
 
 class CommandTransformMatrix(CommandBase):
     mode: Literal["transform_matrix"] = "transform_matrix"
@@ -18,7 +19,7 @@ class CommandTransformMatrix(CommandBase):
     bias_blue: float = Field(ge=-255.0, le=255.0, default=0.0)
     is_static = True
 
-    def _compute(self, buffer: List[tuple[float, float, float]], targets: Iterable[int], time: float):
+    def _compute(self, buffer: RgbBuffer, targets: Iterable[int], time: float):
         br = self.bias_red / 255
         bg = self.bias_green / 255
         bb = self.bias_blue / 255

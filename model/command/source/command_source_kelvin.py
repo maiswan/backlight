@@ -1,13 +1,14 @@
 from typing import Iterable, List, Literal
 from pydantic import Field, model_validator
 from .command_source_base import CommandSourceBase
+from ...buffer_types import RgbBuffer
 
 class CommandSourceKelvin(CommandSourceBase):
     mode: Literal["source_kelvin"] = "source_kelvin"
     kelvin: float = Field(ge=1000, le=12000, default=6500)
     is_static = True
 
-    def _compute(self, buffer: List[tuple[float, float, float]], targets: Iterable[int], time: float):
+    def _compute(self, buffer: RgbBuffer, targets: Iterable[int], time: float):
         r, g, b = self._kelvinToRgb()
         for i in targets:
             buffer[i] = (r, g, b)

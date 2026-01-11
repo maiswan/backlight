@@ -2,6 +2,7 @@ from typing import Iterable, List, Literal
 from pydantic import Field, model_validator
 from .command_source_base import CommandSourceBase
 from .hsvToRgb import hsvToRgb
+from ...buffer_types import RgbBuffer
 
 class CommandSourceRainbow(CommandSourceBase):
     mode: Literal["source_rainbow"] = "source_rainbow"
@@ -9,7 +10,7 @@ class CommandSourceRainbow(CommandSourceBase):
     saturation: float = Field(ge=0, le=1, default=1.0)
     is_static = False
 
-    def _compute(self, buffer: List[tuple[float, float, float]], targets: Iterable[int], time: float):
+    def _compute(self, buffer: RgbBuffer, targets: Iterable[int], time: float):
         hue = (time * 1000 % self.period) / self.period * 360
         r, g, b = hsvToRgb(hue, self.saturation, 1.0)
 

@@ -1,8 +1,9 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
-from typing import ClassVar, Iterable, List
+from typing import ClassVar, Iterable
 from uuid import uuid4
 from pydantic import BaseModel, Field
+from ..buffer_types import RgbBuffer
 
 class CommandBase(BaseModel, ABC):
     mode: ClassVar[str]                                 # discriminator
@@ -32,7 +33,7 @@ class CommandBase(BaseModel, ABC):
     is_static: ClassVar[bool] = False                   # set to true if this Command does not depend on the time
     is_enabled: bool = True
 
-    def execute(self, buffer: List[tuple[float, float, float]], led_count: int, time: float):
+    def execute(self, buffer: RgbBuffer, led_count: int, time: float):
         if (not self.is_enabled):
             return
 
@@ -58,5 +59,5 @@ class CommandBase(BaseModel, ABC):
 
 
     @abstractmethod
-    def _compute(self, buffer: List[tuple[float, float, float]], targets: Iterable[int], time: float):
+    def _compute(self, buffer: RgbBuffer, targets: Iterable[int], time: float):
         ...
