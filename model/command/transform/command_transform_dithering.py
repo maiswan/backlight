@@ -28,28 +28,26 @@ class CommandTransformDithering(CommandBase):
             error_blue += old_blue - round(old_blue * 255) / 255
 
             # propagate error to the next target
-            next_index = next(targets)
-
             new_red = old_red
             new_green = old_green
             new_blue = old_blue
             has_propagated = False
             
             if (error_red >= threshold_red):
-                new_red = buffer[next_index][0] + error_red
+                new_red = buffer[i][0] + error_red
                 has_propagated = True
                 error_red = 0
                 
             if (error_green >= threshold_green):
-                new_green = buffer[next_index][1] + error_green
+                new_green = buffer[i][1] + error_green
                 has_propagated = True
                 error_green = 0
 
             if (error_blue >= threshold_blue):
-                new_blue = buffer[next_index][2] + error_blue
+                new_blue = buffer[i][2] + error_blue
                 has_propagated = True
                 error_blue = 0
 
             if (has_propagated):
-                buffer[next_index] = (new_red, new_green, new_blue)
+                buffer[i] = (new_red, new_green, new_blue)
             

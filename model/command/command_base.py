@@ -12,8 +12,23 @@ class CommandBase(BaseModel, ABC):
     
     z_index: int = Field(default=0)                     # higher = rendered later
     alpha: float = Field(ge=0.0, le=1.0, default=1.0)
-    targets: str = ""                                   # LED indices, example: "1, 2, 3, 56-72"
-    
+
+    _targets: str = ""                                   # LED indices, example: "1, 2, 3, 56-72"
+    _target_indices: list[int] | None = None
+
+    @property
+    def target_indices(self):
+        return self._target_indices
+
+    @property
+    def targets(self):
+        return self._targets
+
+    @targets.setter
+    def targets(self, value):
+        self._targets = targets
+        self._target_indices = None
+
     is_static: ClassVar[bool] = False                   # set to true if this Command does not depend on the time
     is_enabled: bool = True
 
@@ -21,28 +36,26 @@ class CommandBase(BaseModel, ABC):
         if (not self.is_enabled):
             return
 
-        targets = self.get_targets(led_count)
-        self._compute(buffer, targets, time)
+        if (self._target_indices is None):
+            self._target_indices = self.compile_targets(led_count)
 
-    def get_targets(self, led_count: int):
+        self._compute(buffer, self._target_indices, time)
+
+    def compile_targets(self, led_count: int):
         if not self.targets:
-            yield from range(led_count)
-            return
+            return list(range(led_count))
+
+        indices: set[int] = set()
 
         for item in self.targets.replace(",", " ").split():
-            if not item:
-                continue
-
-            if item.isdigit():
-                yield int(item)
-                continue
-
             if "-" in item:
-                parts = item.split("-", 1)
-                if len(parts) == 2:
-                    start = int(parts[0])
-                    end = int(parts[1])
-                    yield from range(start, end + 1)
+                start, end = item.split("-", 1)
+                indices.update(range(int(start), int(end) + 1))
+            else:
+                indices.add(int(item))
+
+        return sorted(indices)
+
 
     @abstractmethod
     def _compute(self, buffer: List[tuple[float, float, float]], targets: Iterable[int], time: float):

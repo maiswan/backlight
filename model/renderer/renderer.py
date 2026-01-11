@@ -36,8 +36,8 @@ class Renderer:
                 # Blend
                 # Transform commands do not support the blend property (since it doesn't really makes sense)
                 blend_mode = command.blend if "source" in command.mode else BlendMode.NORMAL
-
-                for index in command.get_targets(buffer_length):
+                
+                for index in command.target_indices:
                     buffer[index] = Blender.blend(
                         buffer[index],
                         new_buffer[index],
@@ -49,7 +49,5 @@ class Renderer:
                 print(exception)
 
         scale = Renderer.toRgbwTuple if need_rgbw_conversion else Renderer.toRgbTuple
-        for i in range(len(buffer)):
-            buffer[i] = scale(buffer[i])
-
+        buffer = [ scale(i) for i in buffer ]
         return (is_static, buffer)
