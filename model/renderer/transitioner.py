@@ -110,7 +110,7 @@ class Transitioner:
 
     @staticmethod
     def ease_in_out_power(x: float, power: int):
-        return math.pow(2, power) * x * x if x < 0.5 else 1 - math.pow(-2 * x + 2, power) / 2
+        return math.pow(2, power - 1) * math.pow(x, power) if x < 0.5 else 1 - math.pow(-2 * x + 2, power) / 2
         
 
     @staticmethod
