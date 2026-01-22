@@ -53,7 +53,7 @@ class State:
                 progress = (time.monotonic() - start_time) / config.transitions.duration
 
                 if not is_static or new_buffer is None:
-                    _, new_buffer = self._render(needs_rgbw)
+                    is_static, new_buffer = self._render(needs_rgbw)
                     
                 self.buffer = Transitioner.transit(old_buffer, new_buffer, progress, config.transitions.mode)
 
@@ -71,15 +71,15 @@ class State:
             # STATIC: no rerender, just redraw
             interval = 1.0 / config.framerate.idle
             while True:
-                await asyncio.sleep(interval)
                 self._redraw(self.buffer)
+                await asyncio.sleep(interval)
                 
         # ANIMATED: rerender then redraw
         interval = 1.0 / config.framerate.active
         while True:
-            await asyncio.sleep(interval)
             _, self.buffer = self._render(needs_rgbw)
             self._redraw(self.buffer)
+            await asyncio.sleep(interval)
 
     def _get_config_path(self):
         CONFIG_PATHS = [
