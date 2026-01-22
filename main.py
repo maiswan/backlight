@@ -23,8 +23,7 @@ async def lifespan(app: FastAPI):
     await state.deconstruct()
 
 app = FastAPI(
-    title="Backlight HTTP endpoint",
-    description="Control WS2812B LED strip",
+    title="LED controller for WS2812B",
     lifespan=lifespan,
 )
 
@@ -36,16 +35,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(server_router, prefix="/api/v4/server", tags=["server"])
-app.include_router(led_router, prefix="/api/v4/leds", tags=["leds"])
-app.include_router(renderer_router, prefix="/api/v4/renderer", tags=["renderer"])
-app.include_router(command_router, prefix="/api/v4/commands", tags=["commands"])
-app.include_router(home_router, prefix="/api/v4", tags=["home"])
+version = {
+    "major": 4,
+    "minor": 0,
+    "patch": 0,
+}
+major = version["major"]
+
+app.include_router(server_router, prefix=f"/api/v{major}/server", tags=["server"])
+app.include_router(led_router, prefix=f"/api/v{major}/leds", tags=["leds"])
+app.include_router(renderer_router, prefix=f"/api/v{major}/renderer", tags=["renderer"])
+app.include_router(command_router, prefix=f"/api/v{major}/commands", tags=["commands"])
+app.include_router(home_router, prefix=f"/api/v{major}", tags=["home"])
 app.mount("/dashboard", StaticFiles(directory="dashboard/dist", html=True))
 
 @app.get("/")
 async def root():
-    return "maiswan/backlight"
+    return {
+        "program": "backlight",
+        "author": "maiswan",
+        "version": f"{version["major"]}.{version["minor"]}.{version["patch"]}"
+    }
 
 if __name__ == "__main__":
     import uvicorn
