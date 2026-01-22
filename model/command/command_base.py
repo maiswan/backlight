@@ -14,21 +14,13 @@ class CommandBase(BaseModel, ABC):
     z_index: int = Field(default=0)                     # higher = rendered later
     alpha: float = Field(ge=0.0, le=1.0, default=1.0)
 
-    _targets: str = ""                                   # LED indices, example: "1, 2, 3, 56-72"
+    targets: str = ""                                   # LED indices, example: "1, 2, 3, 56-72"
+    _prev_targets: str | None = None
     _target_indices: list[int] | None = None
 
     @property
     def target_indices(self):
         return self._target_indices
-
-    @property
-    def targets(self):
-        return self._targets
-
-    @targets.setter
-    def targets(self, value):
-        self._targets = targets
-        self._target_indices = None
 
     is_static: ClassVar[bool] = False                   # set to true if this Command does not depend on the time
     is_enabled: bool = True
@@ -37,10 +29,11 @@ class CommandBase(BaseModel, ABC):
         if (not self.is_enabled):
             return
 
-        if (self._target_indices is None):
+        if (self.targets != self._prev_targets):
             self._target_indices = self.compile_targets(led_count)
+            self._prev_targets = self.targets
 
-        self._compute(buffer, self._target_indices, time)
+        self._compute(buffer, self.target_indices, time)
 
     def compile_targets(self, led_count: int):
         if not self.targets:
