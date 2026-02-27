@@ -16,21 +16,16 @@ class PixelBase(BaseModel, ABC):
     def __setitem__(self, key, value):
         ...
 
-    @property
-    @abstractmethod
-    def brightness(self):
-        ...
-
-    @brightness.setter
-    def brightness(self, value: float):
-        ...
-
     @abstractmethod
     def __init__(self, pin: int, count: int, pixel_order: str):
         ...
 
     @abstractmethod
     def show(self):
+        ...
+
+    @abstractmethod
+    def clear(self):
         ...
 
     

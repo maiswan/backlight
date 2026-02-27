@@ -21,7 +21,8 @@ class State:
         self.render_task = loop.create_task(self._render_loop())
 
     def _redraw(self, buffer: RgbBuffer | RgbwBuffer):
-        self.pixels[:] = buffer
+        for i, item in enumerate(buffer):
+            self.pixels[i] = buffer[i]
         self.pixels.show()
 
     def _render(self, needs_rgbw: bool):
@@ -101,8 +102,6 @@ class State:
         self.initialize_pixels()
         self.initialize_render_task()
 
-        self.pixels.brightness = 1.0
-
     def initialize_pixels(self):
         if (self.config.leds.transport.mode == "spi"):
             from .pixels.spi import NeoPixelSPI
@@ -124,8 +123,5 @@ class State:
             self.render_task.cancel()
             await self.render_task
  
-        # Turn off LEDs
-        self.pixels.brightness = 0.0
-        self.pixels.show()
-
+        self.pixels.clear()
         self.config.write()

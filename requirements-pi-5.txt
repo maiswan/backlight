@@ -1,6 +1,5 @@
 fastapi
 uvicorn[standard]
-adafruit-circuitpython-neopixel-spi
-adafruit-blinka
+pi5neo
 lgpio
 pydantic

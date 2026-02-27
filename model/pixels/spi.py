@@ -1,37 +1,47 @@
-from board import SPI
-from neopixel_spi import NeoPixel_SPI
+from pi5neo import Pi5Neo
+from pi5neo.pi5neo import EPixelType
 from .pixel_base import PixelBase
 import time
 
 class NeoPixelSPI(PixelBase):
 
-    _pixels: NeoPixel_SPI
+    _pixels: Pi5Neo
+    _has_white_channel: bool
+    _count: int
 
     @property
     def pixels(self):
         return self._pixels
 
     def __getitem__(self, key):
-        return self._pixels[key]
+        return None
 
     def __setitem__(self, key, value):
-        self._pixels[key] = value
+        if self._has_white_channel:
+            r = int(value[0])
+            g = int(value[1])
+            b = int(value[2])
+            w = int(value[3])
+            self._pixels.set_led_color(key, r, g, b, w)
+            return
 
-    @property
-    def brightness(self):
-        return self._pixels._brightness
-
-    @brightness.setter
-    def brightness(self, value: float):
-        self._pixels.brightness = value
+        r = int(value[0])
+        g = int(value[1])
+        b = int(value[2])
+        self._pixels.set_led_color(key, r, g, b)
 
     def __init__(self, count: int, pixel_order: str):
-        self._pixels = NeoPixel_SPI(
-            SPI(),
-            count,
-            pixel_order=pixel_order,
-            auto_write=False
-        )
+        self._has_white_channel = "W" in pixel_order
+        pixel_type = EPixelType.RGBW if self._has_white_channel else EPixelType.RGB
+
+        self._pixels = Pi5Neo('/dev/spidev0.0', count, pixel_type = pixel_type)
+        self._count = count
 
     def show(self):
-        self._pixels.show()
+        self._pixels.update_strip()
+
+    def clear(self):
+        value = (0, 0, 0, 0) if self._has_white_channel else (0, 0, 0)
+        for i in range(self._count):
+            self.__setitem__(i, value)
+        self.show()
