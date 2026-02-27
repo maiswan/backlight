@@ -38,7 +38,7 @@ class NeoPixelSPI(PixelBase):
         self._count = count
 
     def show(self):
-        self._pixels.update_strip()
+        self._pixels.update_strip(None)
 
     def clear(self):
         value = (0, 0, 0, 0) if self._has_white_channel else (0, 0, 0)
