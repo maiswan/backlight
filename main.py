@@ -12,15 +12,19 @@ from routes.renderer_routes import router as renderer_router
 from routes.command_routes import router as command_router
 from routes.home_routes import router as home_router
 
-state = State()
+state: State | None = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # on startup
+    global state
+    if state is None:
+        state = State()
+        state.initialize_output()
+
     yield { "state": state }
-    
+
     # actions on exit
-    await state.deconstruct()
+    state.deconstruct()
 
 app = FastAPI(
     title="LED controller for WS2812B",
@@ -59,4 +63,8 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=state.config.server.port)
+
+    temp_state = State()
+    port = temp_state.config.server.port
+    temp_state.deconstruct()
+    uvicorn.run("main:app", host="0.0.0.0", port=port)

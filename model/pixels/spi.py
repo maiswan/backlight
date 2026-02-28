@@ -41,7 +41,5 @@ class NeoPixelSPI(PixelBase):
         self._pixels.update_strip(None)
 
     def clear(self):
-        value = (0, 0, 0, 0) if self._has_white_channel else (0, 0, 0)
-        for i in range(self._count):
-            self.__setitem__(i, value)
+        self._pixels.clear_strip()
         self.show()

@@ -22,6 +22,9 @@ class CommandBase(BaseModel, ABC):
     def target_indices(self):
         return self._target_indices
 
+    def clear_target_cache(self):
+        self._prev_targets = None
+
     is_static: ClassVar[bool] = False                   # set to true if this Command does not depend on the time
     is_enabled: bool = True
 

@@ -27,18 +27,14 @@ class Renderer:
         buffer = [(0.0, 0.0, 0.0)] * buffer_length
     
         for command in enabled_commands:
-            try:
-                # Compute buffer
-                new_buffer = buffer[:]
-                command.execute(new_buffer, buffer_length, now)
+            # Compute buffer
+            new_buffer = buffer[:]
+            command.execute(new_buffer, buffer_length, now)
 
-                # Blend
-                # Transform commands do not support the blend property (since it doesn't really makes sense)
-                blend_mode = command.blend if "source" in command.mode else BlendMode.NORMAL
-                Blender.blend(buffer, new_buffer, command.target_indices, blend_mode, command.alpha)
-
-            except Exception as exception:
-                print(exception)
+            # Blend
+            # Transform commands do not support the blend property (since it doesn't really makes sense)
+            blend_mode = command.blend if "source" in command.mode else BlendMode.NORMAL
+            Blender.blend(buffer, new_buffer, command.target_indices, blend_mode, command.alpha)
 
         scale = Renderer.toRgbwTuple if need_rgbw_conversion else Renderer.toRgbTuple
         buffer = [ scale(i) for i in buffer ]

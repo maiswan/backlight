@@ -99,8 +99,12 @@ class State:
         config_path = self._get_config_path()
         self.config = Config.load(config_path)
 
+    def initialize_output(self):
+        self.buffer = None
         self.initialize_pixels()
         self.initialize_render_task()
+        for command in self.config.commands:
+            command.clear_target_cache()
 
     def initialize_pixels(self):
         if (self.config.leds.transport.mode == "spi"):
@@ -117,11 +121,12 @@ class State:
             self.config.leds.count,
             self.config.leds.pixel_order,
         )
-
-    async def deconstruct(self):
+    
+    def uninitialize_output(self):
         if (self.render_task): 
-            self.render_task.cancel()
-            await self.render_task
- 
-        self.pixels.clear()
+            self.render_task.cancel() 
+            self.pixels.clear()
+
+    def deconstruct(self):
+        self.uninitialize_output()
         self.config.write()

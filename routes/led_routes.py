@@ -18,12 +18,12 @@ async def get_count(request: Request):
 @router.put("/count", status_code=status.HTTP_204_NO_CONTENT)
 async def put_count(request: Request, payload: IntPayload = Body(...)):
     state = request.state.state
-    try:
-        state.config.leds.count = payload.value
-        state.initialize_pixels()
-        state.config.write()
-    except ValidationError as error:
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error))
+    
+    state.uninitialize_output()
+    state.config.leds.count = payload.value
+    state.initialize_output()
+    state.config.write()
+        
 
 
 # pixel_order
@@ -38,6 +38,7 @@ async def put_pixel_order(request: Request, payload: StrPayload = Body(...)):
     try:
         state.config.leds.pixel_order = payload.value
         state.initialize_pixels()
+        state.initialize_render_task()
         state.config.write()
     except ValidationError as error:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error))
@@ -54,6 +55,7 @@ async def put_transport_mode(request: Request, payload: StrPayload = Body(...)):
     try:
         state.config.leds.transport.mode = payload.value
         state.initialize_pixels()
+        state.initialize_render_task()
         state.config.write()
     except ValidationError as error:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error))
@@ -70,6 +72,7 @@ async def put_transport_pwm_pin(request: Request, payload: IntPayload = Body(...
     try:
         state.config.leds.transport.pwm.pin = payload.value
         state.initialize_pixels()
+        state.initialize_render_task()
         state.config.write()
     except ValidationError as error:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error))
