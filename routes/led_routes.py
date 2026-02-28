@@ -35,13 +35,13 @@ async def get_pixel_order(request: Request):
 @router.put("/pixel_order", status_code=status.HTTP_204_NO_CONTENT)
 async def put_pixel_order(request: Request, payload: StrPayload = Body(...)):
     state = request.state.state
-    try:
-        state.config.leds.pixel_order = payload.value
-        state.initialize_pixels()
-        state.initialize_render_task()
-        state.config.write()
-    except ValidationError as error:
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error))
+        
+    state.uninitialize_output()
+    state.config.leds.pixel_order = payload.value
+    state.initialize_output()
+    state.config.write()
+
+
 
 # transport/mode
 @router.get("/transport/mode")
@@ -52,13 +52,13 @@ async def get_transport_mode(request: Request):
 @router.put("/transport/mode", status_code=status.HTTP_204_NO_CONTENT)
 async def put_transport_mode(request: Request, payload: StrPayload = Body(...)):
     state = request.state.state
-    try:
-        state.config.leds.transport.mode = payload.value
-        state.initialize_pixels()
-        state.initialize_render_task()
-        state.config.write()
-    except ValidationError as error:
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error))
+
+    state.uninitialize_output()
+    state.config.leds.transport.mode = payload.value
+    state.initialize_output()
+    state.config.write()
+
+
 
 # transport/pwm/pin
 @router.get("/transport/pwm/pin")
@@ -69,10 +69,8 @@ async def get_transport_pwm_pin(request: Request):
 @router.put("/transport/pwm/pin", status_code=status.HTTP_204_NO_CONTENT)
 async def put_transport_pwm_pin(request: Request, payload: IntPayload = Body(...)):
     state = request.state.state
-    try:
-        state.config.leds.transport.pwm.pin = payload.value
-        state.initialize_pixels()
-        state.initialize_render_task()
-        state.config.write()
-    except ValidationError as error:
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error))
+
+    state.uninitialize_output()
+    state.config.leds.transport.pwm.pin = payload.value
+    state.initialize_output()
+    state.config.write()

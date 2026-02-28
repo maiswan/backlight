@@ -101,12 +101,12 @@ class State:
 
     def initialize_output(self):
         self.buffer = None
-        self.initialize_pixels()
+        self._initialize_pixels()
         self.initialize_render_task()
         for command in self.config.commands:
             command.clear_target_cache()
 
-    def initialize_pixels(self):
+    def _initialize_pixels(self):
         if (self.config.leds.transport.mode == "spi"):
             from .pixels.spi import NeoPixelSPI
             self.pixels = NeoPixelSPI(
