@@ -116,7 +116,7 @@ class State:
             return
             
         from .pixels.pwm import NeoPixelPWM
-        self.pixels = NeoPixelGPIO(
+        self.pixels = NeoPixelPWM(
             self.config.leds.transport.pwm.pin,
             self.config.leds.count,
             self.config.leds.pixel_order,

@@ -6,6 +6,7 @@ class NeoPixelPWM(PixelBase):
 
     _pixels: NeoPixel
     _has_white_channel: bool
+    _count: int
 
     @property
     def pixels(self):
@@ -19,6 +20,8 @@ class NeoPixelPWM(PixelBase):
 
     def __init__(self, pin: int, count: int, pixel_order: str):
         self._has_white_channel = "W" in pixel_order
+        self._count = count
+
         self._pixels = NeoPixel(
             Pin(pin),
             count,
