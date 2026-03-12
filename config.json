@@ -1,62 +1,39 @@
 {
-    "port": 12021,
-    "led_count": 96,
-    "pixel_order": "GRBW",
-    "spi_enabled": false,
-    "pwm_pin": 10,
-    "fps": 30,
-    "fps_static": 0,
-    "transition_duration": 0.5,
+    "server": {
+        "port": 12021,
+        "whitelist": ["*"]
+    },
+    "leds": {
+        "count": 10,
+        "pixel_order": "GRBW",
+        "transport": {
+            "mode": "pwm",
+            "pwm": {
+                "pin": 10
+            }
+        }
+    },
+    "renderer": {
+        "framerate": {
+            "active": 60.0,
+            "idle": 0.0
+        },
+        "transitions": {
+            "duration": 1.0,
+            "mode": "out_cubic"
+        }
+    },
     "commands": [
         {
-            "mode": "source_rainbow_rolling",
-            "id": "2e89a849-63cf-483d-ba65-2a8ccd139845",
-            "name": "",
+            "mode": "source_kelvin",
+            "id": "c612426a-ac90-4667-99eb-1b043190ce79",
+            "name": "6500 K",
             "z_index": 0,
             "alpha": 1.0,
             "targets": "",
             "is_enabled": true,
             "blend": "normal",
-            "period": 4000,
-            "wavelength": 96,
-            "saturation": 1.0,
-            "propagation": 1
-        },
-        {
-            "mode": "transform_brightness_rolling",
-            "id": "a7848b8c-79bf-4db7-b9c1-ac2a978eb4ec",
-            "name": "",
-            "z_index": 0,
-            "alpha": 1.0,
-            "targets": "",
-            "is_enabled": true,
-            "min_brightness": 0.0,
-            "max_brightness": 0.3,
-            "period": 4000,
-            "wavelength": 96,
-            "propagation": 0
-        },
-        {
-            "mode": "transform_gamma",
-            "id": "e0ccf7da-465c-4ec2-823d-174861e16d56",
-            "name": "",
-            "z_index": 0,
-            "alpha": 1.0,
-            "targets": "",
-            "is_enabled": true,
-            "gamma": 2.2
-        },
-        {
-            "mode": "transform_dithering",
-            "id": "e0ccf7da-465c-4ec2-823d-174861e16d56",
-            "name": "",
-            "z_index": 0,
-            "alpha": 1.0,
-            "targets": "",
-            "is_enabled": true,
-            "min_red": 1,
-            "min_green": 1,
-            "min_blue": 1
+            "kelvin": 6500.0
         }
     ]
 }

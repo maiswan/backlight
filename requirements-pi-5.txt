@@ -3,3 +3,4 @@ uvicorn[standard]
 pi5neo
 lgpio
 pydantic
+fastapi-guard

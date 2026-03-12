@@ -8,3 +8,6 @@ class FloatPayload(BaseModel):
 
 class StrPayload(BaseModel):
     value: str
+
+class ListStrPayload(BaseModel):
+    value: list[str]

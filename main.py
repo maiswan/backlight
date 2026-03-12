@@ -5,22 +5,19 @@ from model.state import State
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from fastapi.middleware.cors import CORSMiddleware
+from guard.middleware import SecurityMiddleware
+from guard.models import SecurityConfig
 from routes.server_routes import router as server_router
 from routes.led_routes import router as led_router
 from routes.renderer_routes import router as renderer_router
 from routes.command_routes import router as command_router
 from routes.home_routes import router as home_router
 
-state: State | None = None
+state = State()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global state
-    if state is None:
-        state = State()
-        state.initialize_output()
-
+    state.initialize_output()
     yield { "state": state }
 
     # actions on exit
@@ -31,13 +28,15 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-app.add_middleware(
-    CORSMiddleware,
+config = SecurityConfig(
+    whitelist=state.config.server.whitelist,
+    enable_cors=True,
     allow_origins=["*"],
-    allow_credentials=True,
     allow_methods=["GET", "PUT", "POST", "DELETE"],
     allow_headers=["*"],
 )
+
+app.add_middleware(SecurityMiddleware, config=config)
 
 version = {
     "major": 4,
@@ -63,8 +62,4 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
-
-    temp_state = State()
-    port = temp_state.config.server.port
-    temp_state.deconstruct()
-    uvicorn.run("main:app", host="0.0.0.0", port=port)
+    uvicorn.run("main:app", host="0.0.0.0", port=state.config.server.port)
