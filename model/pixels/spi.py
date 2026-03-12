@@ -30,11 +30,11 @@ class NeoPixelSPI(PixelBase):
         b = int(value[2])
         self._pixels.set_led_color(key, r, g, b)
 
-    def __init__(self, count: int, pixel_order: str):
+    def __init__(self, device: str, speed_khz: int, count: int, pixel_order: str):
         self._has_white_channel = "W" in pixel_order
         pixel_type = EPixelType.RGBW if self._has_white_channel else EPixelType.RGB
 
-        self._pixels = Pi5Neo('/dev/spidev0.0', count, pixel_type = pixel_type)
+        self._pixels = Pi5Neo(device, count, speed_khz, pixel_type, True)
         self._count = count
 
     def show(self):

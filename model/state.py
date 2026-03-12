@@ -110,6 +110,8 @@ class State:
         if (self.config.leds.transport.mode == "spi"):
             from .pixels.spi import NeoPixelSPI
             self.pixels = NeoPixelSPI(
+                self.config.leds.transport.spi.device,
+                self.config.leds.transport.spi.speed_khz,
                 self.config.leds.count,
                 self.config.leds.pixel_order
             )
