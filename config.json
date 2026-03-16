@@ -32,13 +32,35 @@
         {
             "mode": "source_kelvin",
             "id": "c612426a-ac90-4667-99eb-1b043190ce79",
-            "name": "6500 K",
+            "name": "Temperature",
             "z_index": 0,
             "alpha": 1.0,
             "targets": "",
             "is_enabled": true,
             "blend": "normal",
             "kelvin": 6500.0
+        },
+        {
+            "mode": "transfrom_brightness",
+            "id": "11a66471-e66d-4afb-921b-8a82616d9c61",
+            "name": "Brightness",
+            "z_index": 0,
+            "alpha": 1.0,
+            "targets": "",
+            "is_enabled": true,
+            "blend": "normal",
+            "brightness": 1.0
+        },
+        {
+            "mode": "transform_gamma",
+            "id": "857afa30-c718-4acc-8bd6-2c81b5b13d7f",
+            "name": "Brightness",
+            "z_index": 0,
+            "alpha": 1.0,
+            "targets": "",
+            "is_enabled": true,
+            "blend": "normal",
+            "gamma": 1.8
         }
     ]
 }

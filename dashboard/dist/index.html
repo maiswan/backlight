@@ -1,14 +1,144 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Backlight Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>Minimal Backlight Controller</title>
 </head>
 
 <body>
-    <p>To enable the dashboard on this host, please clone and build <a href="https://github.com/maiswan/backlight-dashboard">backlight-dashboard</a> and place the built files in this directory (/dashboard/dist).</p>
+    <main>
+        <section>
+            <p>This dashboard is a minimal demonstration of backlight's API.</p>
+            <p>For the complete experience, please clone and build <a href="https://github.com/maiswan/backlight-dashboard">maiswan/backlight-dashboard</a>, then place the built files in /dashboard/dist.</p>
+        </section>
+
+        <label>Temperature (<span id="temperatureLabel">?</span>K)</label>
+
+        <div>
+            <input oninput="updateLabels()" onchange="set()" id="temperatureSlider" type="range" min="1000" max="7200" step="100">
+            <button onclick="nudge('temperature', -100)">&minus;</button>
+            <button onclick="nudge('temperature', 100)">+</button>
+        </div>
+
+        <label>Brightness (<span id="brightnessLabel">?</span>)</label>
+        <div>
+            <input oninput="updateLabels()" onchange="set()" id="brightnessSlider" type="range" min="0" max="1"
+                step="0.01">
+            <button onclick="nudge('brightness', -0.05)">&minus;</button>
+            <button onclick="nudge('brightness', 0.05)">+</button>
+        </div>
+    </main>
+
+    <script>
+        const endpoint = "/api/v4/commands"
+        const temperatureLabel = document.getElementById("temperatureLabel");
+        const temperatureSlider = document.getElementById("temperatureSlider");
+        const brightnessLabel = document.getElementById("brightnessLabel");
+        const brightnessSlider = document.getElementById("brightnessSlider");
+
+        let temperatureCommandId = null;
+        let brightnessCommandId = null;
+        let temperaturePrevious = null;
+        let brightnessPrevious = null;
+
+        async function get() {
+            const response = await fetch(endpoint);
+            if (!response.ok) { return; }
+
+            const commands = await response.json();
+
+            const temperatureCommand = commands.find(x => x.mode === "source_kelvin");
+            temperatureCommandId = temperatureCommand.id;
+            temperatureSlider.value = temperatureCommand.kelvin;
+            temperaturePrevious = temperatureSlider.value;
+
+            const brightnessCommand = commands.find(x => x.mode === "transform_brightness");
+            brightnessCommandId = brightnessCommand.id;
+            brightnessSlider.value = brightnessCommand.brightness;
+            brightnessPrevious = brightnessSlider.value;
+
+            updateLabels();
+        }
+
+        function updateLabels() {
+            temperatureLabel.innerText = temperatureSlider.value
+            brightnessLabel.innerText = brightnessSlider.value
+        }
+
+        async function set() {
+            if (temperatureSlider.value !== temperaturePrevious) {
+                temperaturePrevious = temperatureSlider.value;
+                const temperaturePayload = JSON.stringify({ kelvin: Number.parseInt(temperatureSlider.value) });
+                const temperatureEndpoint = `${endpoint}/${temperatureCommandId}`;
+                await fetch(temperatureEndpoint, { method: "PUT", body: temperaturePayload });
+            }
+
+            if (brightnessSlider.value !== brightnessPrevious) {
+                brightnessPrevious = brightnessSlider.value;
+                const brightnessPayload = JSON.stringify({ brightness: Number.parseFloat(brightnessSlider.value) });
+                const brightnessEndpoint = `${endpoint}/${brightnessCommandId}`;
+                await fetch(brightnessEndpoint, { method: "PUT", body: brightnessPayload });
+            }
+        }
+
+        async function nudge(control, delta) {
+            let slider = null;
+            if (control === "temperature") { slider = temperatureSlider; }
+            if (control === "brightness") { slider = brightnessSlider; }
+            if (slider == null) { return; }
+
+            slider.value = Number.parseFloat(slider.value) + delta;
+            updateLabels();
+            await set();
+        }
+
+        get();
+    </script>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 0 1rem;
+            display: flex;
+            align-items: center;
+            height: 80vh;
+        }
+
+        main {
+            flex: 1;
+            max-width: 48rem;
+            margin: auto;
+        }
+
+        input {
+            display: block;
+            width: 100%;
+        }
+
+        section {
+            padding:  0 0 2rem 0;
+            margin: 0 0 2rem 0;
+            border-bottom: 1px solid gray;
+        }
+
+        p {
+            margin: 0;
+        }
+
+        div {
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: flex-row;
+            column-gap: 0.5ch;
+        }
+
+        button {
+            padding: 0.5rem 1rem;
+            min-width: 4rem;
+        }
+    </style>
 </body>
 
 </html>
