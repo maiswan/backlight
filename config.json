@@ -1,7 +1,8 @@
 {
     "server": {
         "port": 12021,
-        "whitelist": ["*"]
+        "whitelist": [],
+        "blacklist": []
     },
     "leds": {
         "count": 10,
