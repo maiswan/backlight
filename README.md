@@ -32,7 +32,7 @@ pip install -r requirements.txt
 1. Install packages
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements-pi-5.txt
 ```
 
 2. Enable the SPI Interface with `sudo raspi-config`
@@ -47,7 +47,7 @@ pip install -r requirements.txt
 
     Edit `config.json` and set `mode` (under `leds` and `transport`) to `spi`
 
-5. Connect the LED data line to the SPI MOSI data pin
+5. Connect the LED data line to the SPI MOSI data pin (default is GPIO pin 10, aka physical pin 19)
 
 
 ### 3. Final touches
