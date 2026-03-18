@@ -6,16 +6,23 @@ import time
 class Renderer:
     @staticmethod
     def toRgbwTuple(tuple: RgbTuple):
-        white = min(tuple[0], tuple[1], tuple[2])
-        red = (tuple[0] - white) * 255
-        green = (tuple[1] - white) * 255
-        blue = (tuple[2] - white) * 255
-        white *= 255
+        red = min(max(0, tuple[0] * 255), 255)
+        green = min(max(0, tuple[1] * 255), 255)
+        blue = min(max(0, tuple[2] * 255), 255)
+
+        # Offload as much brightness to white LED as possible
+        white = min(red, green, blue)
+        red -= white
+        green -= white
+        blue -= white
         return (red, green, blue, white)
 
     @staticmethod
     def toRgbTuple(tuple: RgbTuple):
-        return (tuple[0] * 255, tuple[1] * 255, tuple[2] * 255)
+        red = min(max(0, tuple[0] * 255), 255)
+        green = min(max(0, tuple[1] * 255), 255)
+        blue = min(max(0, tuple[2] * 255), 255)
+        return (red, green, blue)
 
     @staticmethod
     def render(commands: CommandUnion, buffer_length: int, need_rgbw_conversion: bool):
