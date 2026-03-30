@@ -38,9 +38,6 @@ async def put_all(request: Request, commands: list[CommandUnion] = Body(...)):
 @router.delete("/", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_all(request: Request):
     state = request.state.state
-    if len(state.config.commands) == 0:
-        raise HTTPException(status_code=404, detail="No commands to delete")
-
     state.config.commands = []
     state.config.write()
     state.initialize_render_task()
@@ -52,20 +49,16 @@ async def get_command(request: Request, id_or_name: str):
     for command in state.config.commands:
         if command.name == id_or_name or command.id == id_or_name:
             return command
-    else:
-        raise HTTPException(status_code=404, detail="Command not found")
+            
+    raise HTTPException(status_code=404, detail="Command not found")
 
 # PUT existing command
 @router.put("/{id_or_name}", status_code=status.HTTP_204_NO_CONTENT)
-async def put_command(request: Request, id_or_name: str):
+async def put_command(request: Request, id_or_name: str, command: CommandUnion = Body(...)):
     state = request.state.state
-    for i, command in enumerate(state.config.commands):
-        if command.name == id_or_name or command.id == id_or_name:
-            
-            body = await request.json()
-            for key, value in body.items():
-                setattr(state.config.commands[i], key, value)
-
+    for i, existing_command in enumerate(state.config.commands):
+        if existing_command.name == id_or_name or existing_command.id == id_or_name:
+            state.config.commands[i] = command
             state.config.write()
             state.initialize_render_task()
             return
@@ -76,12 +69,6 @@ async def put_command(request: Request, id_or_name: str):
 @router.delete("/{id_or_name}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_command(request: Request, id_or_name: str):
     state = request.state.state
-    before = len(state.config.commands)
     state.config.commands = [ x for x in state.config.commands if not (x.name == id_or_name or x.id == id_or_name) ]
-    after = len(state.config.commands)
-
-    if before == after:
-        raise HTTPException(status_code=404, detail="Command not found")
-    
     state.config.write()
     state.initialize_render_task()
