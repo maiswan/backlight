@@ -1,6 +1,6 @@
 fastapi
 uvicorn[standard]
-pi5neo
+pi5neo ~= 1.1
 lgpio
 pydantic
 fastapi-guard

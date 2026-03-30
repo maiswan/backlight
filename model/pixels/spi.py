@@ -1,5 +1,4 @@
-from pi5neo import Pi5Neo
-from pi5neo.pi5neo import EPixelType
+from pi5neo import Pi5Neo, EPixelType
 from .pixel_base import PixelBase
 import time
 
@@ -32,7 +31,7 @@ class NeoPixelSPI(PixelBase):
 
     def __init__(self, device: str, speed_khz: int, count: int, pixel_order: str):
         self._has_white_channel = "W" in pixel_order
-        pixel_type = EPixelType.RGBW if self._has_white_channel else EPixelType.RGB
+        pixel_type = EPixelType(pixel_order)
 
         self._pixels = Pi5Neo(device, count, speed_khz, pixel_type, True)
         self._count = count
