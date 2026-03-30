@@ -43,6 +43,10 @@
         let temperaturePrevious = null;
         let brightnessPrevious = null;
 
+        let temperatureTimeout = undefined;
+        let brightnessTimeout = undefined;
+        const debounceMs = 250;
+
         async function get() {
             const response = await fetch(endpoint);
             if (!response.ok) { return; }
@@ -70,16 +74,24 @@
         async function set() {
             if (temperatureSlider.value !== temperaturePrevious) {
                 temperaturePrevious = temperatureSlider.value;
-                const temperaturePayload = JSON.stringify({ kelvin: Number.parseInt(temperatureSlider.value) });
-                const temperatureEndpoint = `${endpoint}/${temperatureCommandId}`;
-                await fetch(temperatureEndpoint, { method: "PUT", body: temperaturePayload });
+
+                clearTimeout(temperatureTimeout);
+                temperatureTimeout = setTimeout(async () => {
+                    const temperaturePayload = JSON.stringify({ kelvin: Number.parseInt(temperatureSlider.value) });
+                    const temperatureEndpoint = `${endpoint}/${temperatureCommandId}`;
+                    await fetch(temperatureEndpoint, { method: "PUT", body: temperaturePayload });
+                }, debounceMs);
             }
 
             if (brightnessSlider.value !== brightnessPrevious) {
                 brightnessPrevious = brightnessSlider.value;
-                const brightnessPayload = JSON.stringify({ brightness: Number.parseFloat(brightnessSlider.value) });
-                const brightnessEndpoint = `${endpoint}/${brightnessCommandId}`;
-                await fetch(brightnessEndpoint, { method: "PUT", body: brightnessPayload });
+
+                clearTimeout(temperatureTimeout);
+                temperatureTimeout = setTimeout(async () => {
+                    const brightnessPayload = JSON.stringify({ brightness: Number.parseFloat(brightnessSlider.value) });
+                    const brightnessEndpoint = `${endpoint}/${brightnessCommandId}`;
+                    await fetch(brightnessEndpoint, { method: "PUT", body: brightnessPayload });
+                }, debounceMs);
             }
         }
 
