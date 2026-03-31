@@ -42,28 +42,56 @@ async def delete_all(request: Request):
     state.config.write()
     state.initialize_render_task()
 
+def findCommand(commands: list[CommandUnion], id_or_name: str):
+    for i, command in enumerate(commands):
+        if command.name == id_or_name or command.id == id_or_name:
+            return i, command
+    
+    return -1
+
 # GET existing command
 @router.get("/{id_or_name}")
 async def get_command(request: Request, id_or_name: str):
-    state = request.state.state
-    for command in state.config.commands:
-        if command.name == id_or_name or command.id == id_or_name:
-            return command
-            
-    raise HTTPException(status_code=404, detail="Command not found")
+    config = request.state.state.config
+    i, command = findCommand(config.commands, id_or_name)
+
+    if i == -1:
+        raise HTTPException(status_code=404, detail="Command not found")
+
+    return command
 
 # PUT existing command
 @router.put("/{id_or_name}", status_code=status.HTTP_204_NO_CONTENT)
 async def put_command(request: Request, id_or_name: str, command: CommandUnion = Body(...)):
     state = request.state.state
-    for i, existing_command in enumerate(state.config.commands):
-        if existing_command.name == id_or_name or existing_command.id == id_or_name:
-            state.config.commands[i] = command
-            state.config.write()
-            state.initialize_render_task()
-            return
-            
-    raise HTTPException(status_code=404, detail="Command not found")
+    i, command = findCommand(state.config.commands, id_or_name)
+
+    if i == -1:
+        raise HTTPException(status_code=404, detail="Command not found")
+
+    state.config.commands[i] = command
+    state.config.write()
+    state.initialize_render_task()
+
+# PATCH existing command
+@router.patch("/{id_or_name}", status_code=status.HTTP_204_NO_CONTENT)
+async def patch_command(request: Request, id_or_name: str):
+    state = request.state.state
+    i, command = findCommand(state.config.commands, id_or_name)
+
+    if i == -1:
+        raise HTTPException(status_code=404, detail="Command not found")
+
+    body = await request.json()
+    if "mode" in body:
+        raise HTTPException(status_code=422, detail="Use PUT to change mode")
+
+    for key, value in body.items():
+
+        setattr(state.config.commands[i], key, value)
+        
+    state.config.write()
+    state.initialize_render_task()
         
 # DELETE existing command
 @router.delete("/{id_or_name}", status_code=status.HTTP_204_NO_CONTENT)

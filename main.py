@@ -33,7 +33,7 @@ config = SecurityConfig(
     blacklist=state.config.server.blacklist,
     enable_cors=True,
     allow_origins=["*"],
-    allow_methods=["GET", "PUT", "POST", "DELETE"],
+    allow_methods=["GET", "PUT", "PATCH", "POST", "DELETE"],
     allow_headers=["*"],
 )
 

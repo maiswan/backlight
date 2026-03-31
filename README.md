@@ -73,7 +73,8 @@ backlight also offers remote control through a HTTP API. The routes are as follo
 | `PUT` | `/api/v4/commands` | Replace all existing commands |
 | `DELETE` | `/api/v4/commands` | Delete all existing commands |
 | `GET` | `/api/v4/commands/{id_or_name}` | Retrieve an existing command |
-| `PUT` | `/api/v4/commands/{id_or_name}` | Update an existing command |
+| `PUT` | `/api/v4/commands/{id_or_name}` | Overwrite an existing command |
+| `PATCH` | `/api/v4/commands/{id_or_name}` | Change field(s) of an existing command |
 | `DELETE` | `/api/v4/commands/{id_or_name}` | Delete an existing command |
 | `POST` | `/api/v4/commands/redraw` | Restart the render pipeline |
 | `GET` | `/api/v4` | Get the current configurations and commands |
@@ -90,4 +91,4 @@ PUT /api/v4/renderer/framerate/active
 }
 ```
 
-Updating the `port` or `whitelist` values requires restarting backlight.
+Updating values under `server` requires restarting backlight.
