@@ -1,57 +1,26 @@
 {
-    "server": {
-        "port": 12021
-    },
     "leds": {
         "count": 10,
         "pixel_order": "GRBW",
         "transport": {
             "mode": "pwm",
-            "pin": 10
-        }
-    },
-    "renderer": {
-        "framerate": {
-            "active": 60.0,
-            "idle": 0.0
-        },
-        "transitions": {
-            "duration": 1.0,
-            "mode": "out_cubic"
+            "pin": 18
         }
     },
     "commands": [
         {
             "mode": "source_kelvin",
-            "id": "c612426a-ac90-4667-99eb-1b043190ce79",
             "name": "Temperature",
-            "z_index": 0,
-            "alpha": 1.0,
-            "targets": "",
-            "is_enabled": true,
-            "blend": "normal",
-            "kelvin": 6500.0
+            "kelvin": 6500
         },
         {
             "mode": "transform_brightness",
-            "id": "11a66471-e66d-4afb-921b-8a82616d9c61",
             "name": "Brightness",
-            "z_index": 0,
-            "alpha": 1.0,
-            "targets": "",
-            "is_enabled": true,
-            "blend": "normal",
             "brightness": 1.0
         },
         {
             "mode": "transform_gamma",
-            "id": "857afa30-c718-4acc-8bd6-2c81b5b13d7f",
-            "name": "Brightness",
-            "z_index": 0,
-            "alpha": 1.0,
-            "targets": "",
-            "is_enabled": true,
-            "blend": "normal",
+            "name": "Gamma",
             "gamma": 1.8
         }
     ]

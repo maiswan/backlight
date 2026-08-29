@@ -7,7 +7,7 @@ class PwmTransport(BaseModel):
 
 class SpiTransport(BaseModel):
     mode: Literal["spi"]
-    device: str
+    device: str = Field(default="/dev/spidev0.0")
     speed_khz: int = Field(gt=0)
 
 Transport = Annotated[

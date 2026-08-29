@@ -1,4 +1,4 @@
-from pydantic import BaseModel, PrivateAttr, ConfigDict
+from pydantic import BaseModel, Field, PrivateAttr, ConfigDict
 from ..command_union import CommandUnion
 from .led_config import LedConfig
 from .renderer_config import RendererConfig
@@ -8,10 +8,11 @@ import json
 class Config(BaseModel):
     model_config = ConfigDict(validate_assignment=True)
 
-    server: ServerConfig
-    leds: LedConfig
-    renderer: RendererConfig
-    commands: list[CommandUnion]
+    server: ServerConfig = Field(default_factory=ServerConfig)
+    leds: LedConfig = Field(default_factory=LedConfig)
+    renderer: RendererConfig = Field(default_factory=RendererConfig)
+    commands: list[CommandUnion] = Field(default=[])
+
     _path: str = PrivateAttr()
 
     @classmethod
@@ -24,13 +25,12 @@ class Config(BaseModel):
         return config
 
     def write(self, path: str | None = None):
-        if path is None:
-            path = self._path
+
+        path = path or self._path
 
         if path is None:
             raise ValueError("No path specified for writing config")
 
-        model_dump = self.model_dump(mode='json')
-
+        dump = self.model_dump_json(exclude_unset=True, indent=4)
         with open(path, 'w') as f:
-            json.dump(model_dump, f, indent=4)
+            f.write(dump)
