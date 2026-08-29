@@ -2,11 +2,11 @@ from asyncio import Task
 import asyncio
 import os
 import time
-import math
 from .pixels.pixel_base import PixelBase
 from .config.config import Config
+from .config.led_config import SpiTransport
 from .renderer.renderer import Renderer
-from .renderer.transitioner import Transitioner, EasingMode
+from .renderer.transitioner import Transitioner
 from .buffer_types import RgbBuffer, RgbwBuffer
 
 class State:
@@ -107,11 +107,11 @@ class State:
             command.clear_target_cache()
 
     def _initialize_pixels(self):
-        if (self.config.leds.transport.mode == "spi"):
+        if isinstance(self.config.leds.transport, SpiTransport):
             from .pixels.spi import NeoPixelSPI
             self.pixels = NeoPixelSPI(
-                self.config.leds.transport.spi.device,
-                self.config.leds.transport.spi.speed_khz,
+                self.config.leds.transport.device,
+                self.config.leds.transport.speed_khz,
                 self.config.leds.count,
                 self.config.leds.pixel_order
             )
@@ -119,7 +119,7 @@ class State:
             
         from .pixels.pwm import NeoPixelPWM
         self.pixels = NeoPixelPWM(
-            self.config.leds.transport.pwm.pin,
+            self.config.leds.transport.pin,
             self.config.leds.count,
             self.config.leds.pixel_order,
         )

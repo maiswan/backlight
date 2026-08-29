@@ -1,19 +1,21 @@
-from typing import Literal
+from typing import Annotated, Literal
 from pydantic import BaseModel, Field
 
-class PwmConfig(BaseModel):
+class PwmTransport(BaseModel):
+    mode: Literal["pwm"]
     pin: int = Field(gt=0)
 
-class SpiConfig(BaseModel):
+class SpiTransport(BaseModel):
+    mode: Literal["spi"]
     device: str
     speed_khz: int = Field(gt=0)
 
-class TransportConfig(BaseModel):
-    mode: Literal["pwm", "spi"]
-    pwm: PwmConfig | None
-    spi: SpiConfig | None
+Transport = Annotated[
+    PwmTransport | SpiTransport,
+    Field(discriminator="mode")
+]
 
 class LedConfig(BaseModel):
     count: int = Field(gt=0)
     pixel_order: str
-    transport: TransportConfig
+    transport: Transport

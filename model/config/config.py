@@ -1,5 +1,4 @@
-from typing import Annotated, Union
-from pydantic import BaseModel, Field, PrivateAttr, ConfigDict
+from pydantic import BaseModel, PrivateAttr, ConfigDict
 from ..command_union import CommandUnion
 from .led_config import LedConfig
 from .renderer_config import RendererConfig

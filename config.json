@@ -7,13 +7,7 @@
         "pixel_order": "GRBW",
         "transport": {
             "mode": "pwm",
-            "pwm": {
-                "pin": 10
-            },
-            "spi": {
-                "device": "/dev/spidev0.0",
-                "speed_khz": 800
-            }
+            "pin": 10
         }
     },
     "renderer": {
