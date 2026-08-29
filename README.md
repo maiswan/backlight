@@ -14,7 +14,6 @@ backlight is a FastAPI-based LED controller for WS281x strips (WS2812B, SK6812, 
 ## Setup
 ### 1. Initialize a Python virtual environment
 ```bash
-sudo apt-get install python3-dev # install globally
 python -m venv .venv
 source .venv/bin/activate
 ```

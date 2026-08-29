@@ -1,7 +1,7 @@
 fastapi
 uvicorn[standard]
-rpi_ws281x
+adafruit-blinka
 adafruit-circuitpython-neopixel
-RPi.GPIO
+rpi-lgpio
 pydantic
 fastapi-guard
