@@ -3,10 +3,10 @@ from model.state import State
 
 # HTTP server
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
-from guard.middleware import SecurityMiddleware
-from guard.models import SecurityConfig
 from routes.server_routes import router as server_router
 from routes.led_routes import router as led_router
 from routes.renderer_routes import router as renderer_router
@@ -28,16 +28,13 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-config = SecurityConfig(
-    whitelist=state.config.server.whitelist,
-    blacklist=state.config.server.blacklist,
-    enable_cors=True,
+app.add_middleware(
+    CORSMiddleware,
     allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["GET", "PUT", "PATCH", "POST", "DELETE"],
     allow_headers=["*"],
 )
-
-app.add_middleware(SecurityMiddleware, config=config)
 
 version = {
     "major": 4,
@@ -58,7 +55,7 @@ async def root():
     return {
         "program": "backlight",
         "author": "maiswan",
-        "version": f"{version["major"]}.{version["minor"]}.{version["patch"]}"
+        "version": f"{version['major']}.{version['minor']}.{version['patch']}"
     }
 
 if __name__ == "__main__":

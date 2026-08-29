@@ -1,8 +1,6 @@
 {
     "server": {
-        "port": 12021,
-        "whitelist": [],
-        "blacklist": []
+        "port": 12021
     },
     "leds": {
         "count": 10,
@@ -41,7 +39,7 @@
             "kelvin": 6500.0
         },
         {
-            "mode": "transfrom_brightness",
+            "mode": "transform_brightness",
             "id": "11a66471-e66d-4afb-921b-8a82616d9c61",
             "name": "Brightness",
             "z_index": 0,
