@@ -25,8 +25,7 @@ class Renderer:
         return (red, green, blue)
 
     @staticmethod
-    def render(commands: CommandUnion, buffer_length: int):
-        now = time.monotonic()
+    def render(commands: CommandUnion, buffer_length: int, now: int):
 
         enabled_commands = sorted([ x for x in commands if x.is_enabled], key=lambda x: x.z_index)
         is_static = all(x.is_static for x in enabled_commands)

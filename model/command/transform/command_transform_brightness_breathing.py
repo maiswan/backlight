@@ -1,6 +1,6 @@
 from typing import Iterable, List, Literal
 from pydantic import Field, model_validator
-from math import sin
+from math import sin, pi
 from ..command_base import CommandBase
 from ...buffer_types import RgbBuffer
 
@@ -12,7 +12,7 @@ class CommandTransformBrightnessBreathing(CommandBase):
     is_static = False
 
     def _compute(self, buffer: RgbBuffer, targets: Iterable[int], time: float):
-        brightness = sin(2 * 3.14 * time * 1000 / self.period) / 2 + 0.5
+        brightness = sin(2 * pi * time / self.period) / 2 + 0.5
         brightness *= self.max_brightness - self.min_brightness
         brightness += self.min_brightness
 

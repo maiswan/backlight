@@ -1,19 +1,21 @@
 from asyncio import Task
 import asyncio
 import os
-import time
 from .pixels.pixel_base import PixelBase
 from .config.config import Config
 from .config.led_config import SpiTransport
 from .renderer.renderer import Renderer
 from .renderer.transitioner import Transitioner
 from .buffer_types import RgbBuffer
+from .time.time_source_base import TimeSourceBase
+from .time.monotonic_time_source import MonotonicTimeSource
 
 class State:
     config: Config
     render_task: Task | None = None
     pixels: PixelBase
     buffer: RgbBuffer | None = None
+    time_source: TimeSourceBase = MonotonicTimeSource()
 
     def initialize_render_task(self):
         if (self.render_task): self.render_task.cancel()
@@ -21,7 +23,10 @@ class State:
         self.render_task = loop.create_task(self._render_loop())
 
     def _redraw(self):
-        for i, item in enumerate(self.buffer):
+        if self.buffer is None:
+            return
+
+        for i in range(len(self.buffer)):
             if "W" in self.config.leds.pixel_order:
                 self.pixels[i] = Renderer.toRgbwTuple(self.buffer[i])
             else:
@@ -31,7 +36,8 @@ class State:
     def _render(self):
         return Renderer.render(
             self.config.commands,
-            self.config.leds.count
+            self.config.leds.count,
+            self.time_source.now()
         )
                 
     async def _render_loop(self):
@@ -45,22 +51,23 @@ class State:
 
         # Transition
         if config.transitions.duration > 0:
-            interval = 1 / config.framerate.active
+            interval = int(1000 / config.framerate.active)
             progress = 0
             old_buffer = self.buffer[:]
             new_buffer = None
-            start_time = time.monotonic()
+            start_time = self.time_source.now()
   
             while progress < 1:
-                progress = (time.monotonic() - start_time) / config.transitions.duration * 1000
+                progress = (self.time_source.now() - start_time) / config.transitions.duration
                 if not is_static or new_buffer is None:
                     is_static, new_buffer = self._render()
                 
                 self.buffer = Transitioner.transit(old_buffer, new_buffer, progress, config.transitions.mode)
-
                 self._redraw()
-                await asyncio.sleep(interval)
-        
+
+                self.time_source.advance(interval)
+                await asyncio.sleep(interval / 1000)
+
         # Fast exit if the user doesn't want to rerender static content repeatedly
         if (is_static and config.framerate.idle <= 0):
             _, self.buffer = self._render()
@@ -70,17 +77,18 @@ class State:
         # Redraw every frame
         if is_static:
             # STATIC: no rerender, just redraw
-            interval = 1.0 / config.framerate.idle
+            interval = int(1000 / config.framerate.idle)
             while True:
-                _, self.buffer = self._redraw()
-                await asyncio.sleep(interval)
+                self._redraw()
+                await asyncio.sleep(interval / 1000)
                 
         # ANIMATED: rerender then redraw
-        interval = 1.0 / config.framerate.active
+        interval = int(1000 / config.framerate.active)
         while True:
             _, self.buffer = self._render()
             self._redraw()
-            await asyncio.sleep(interval)
+            self.time_source.advance(interval)
+            await asyncio.sleep(interval / 1000)
 
     def _get_config_path(self):
         CONFIG_PATHS = [

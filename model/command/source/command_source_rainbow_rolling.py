@@ -18,7 +18,7 @@ class CommandSourceRainbowRolling(CommandSourceBase):
 
         for (index, i) in enumerate(targets):
             physical_position = (index % self.wavelength) / self.wavelength
-            time_position = ((time * 1000) % self.period) / self.period                
+            time_position = (time % self.period) / self.period                
             
             hue = (physical_position + time_position * direction) % 1.0 * 360
             r, g, b = hsvToRgb(hue, self.saturation, 1.0)

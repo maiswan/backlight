@@ -11,7 +11,7 @@ class CommandSourceRainbow(CommandSourceBase):
     is_static = False
 
     def _compute(self, buffer: RgbBuffer, targets: Iterable[int], time: float):
-        hue = (time * 1000 % self.period) / self.period * 360
+        hue = (time % self.period) / self.period * 360
         r, g, b = hsvToRgb(hue, self.saturation, 1.0)
 
         for i in targets:
