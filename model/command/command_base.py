@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from typing import ClassVar, Iterable
 from uuid import uuid4
 from pydantic import BaseModel, Field
+from uuid import UUID
 
 from ..renderer.blender import BlendMode
 from ..buffer_types import RgbBuffer
@@ -10,7 +11,7 @@ from ..buffer_types import RgbBuffer
 class CommandBase(BaseModel, ABC):
     mode: ClassVar[str]                                 # discriminator
     
-    id: str = Field(default_factory=uuid4)
+    id: UUID = Field(default_factory=uuid4)
     name: str = Field(default="")                       # user-friendly name
     
     z_index: int = Field(default=0)                     # higher = rendered later

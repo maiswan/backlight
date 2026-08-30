@@ -2,6 +2,7 @@ from typing import Annotated, Union
 from fastapi import APIRouter, Body, HTTPException, status, Request
 from pydantic import Field
 from model.command_union import CommandUnion
+import uuid
 
 router = APIRouter()
 
@@ -42,18 +43,27 @@ async def delete_all(request: Request):
     state.config.write()
     state.initialize_render_task()
 
-def findCommand(commands: list[CommandUnion], id_or_name: str):
+def find_command(commands: list[CommandUnion], identifier: str):
+
+    try:
+        command_id = uuid.UUID(identifier)
+    except ValueError: # not an UUID
+        command_id = None
+
+    print(command_id)
+    print()
+
     for i, command in enumerate(commands):
-        if command.name == id_or_name or command.id == id_or_name:
+        print(command.id)
+        if command.name == identifier or command.id == command_id:
             return i, command
     
-    return -1
-
+    return -1, None
 # GET existing command
-@router.get("/{id_or_name}")
-async def get_command(request: Request, id_or_name: str):
+@router.get("/{identifier}")
+async def get_command(request: Request, identifier: str):
     config = request.state.state.config
-    i, command = findCommand(config.commands, id_or_name)
+    i, command = find_command(config.commands, identifier)
 
     if i == -1:
         raise HTTPException(status_code=404, detail="Command not found")
@@ -61,10 +71,10 @@ async def get_command(request: Request, id_or_name: str):
     return command
 
 # PUT existing command
-@router.put("/{id_or_name}", status_code=status.HTTP_204_NO_CONTENT)
-async def put_command(request: Request, id_or_name: str, command: CommandUnion = Body(...)):
+@router.put("/{identifier}", status_code=status.HTTP_204_NO_CONTENT)
+async def put_command(request: Request, identifier: str, command: CommandUnion = Body(...)):
     state = request.state.state
-    i, command = findCommand(state.config.commands, id_or_name)
+    i, command = find_command(state.config.commands, identifier)
 
     if i == -1:
         raise HTTPException(status_code=404, detail="Command not found")
@@ -74,10 +84,10 @@ async def put_command(request: Request, id_or_name: str, command: CommandUnion =
     state.initialize_render_task()
 
 # PATCH existing command
-@router.patch("/{id_or_name}", status_code=status.HTTP_204_NO_CONTENT)
-async def patch_command(request: Request, id_or_name: str):
+@router.patch("/{identifier}", status_code=status.HTTP_204_NO_CONTENT)
+async def patch_command(request: Request, identifier: str):
     state = request.state.state
-    i, command = findCommand(state.config.commands, id_or_name)
+    i, command = find_command(state.config.commands, identifier)
 
     if i == -1:
         raise HTTPException(status_code=404, detail="Command not found")
@@ -94,9 +104,9 @@ async def patch_command(request: Request, id_or_name: str):
     state.initialize_render_task()
         
 # DELETE existing command
-@router.delete("/{id_or_name}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_command(request: Request, id_or_name: str):
+@router.delete("/{identifier}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_command(request: Request, identifier: str):
     state = request.state.state
-    state.config.commands = [ x for x in state.config.commands if not (x.name == id_or_name or x.id == id_or_name) ]
+    state.config.commands = [ x for x in state.config.commands if not (x.name == identifier or x.id == identifier) ]
     state.config.write()
     state.initialize_render_task()
