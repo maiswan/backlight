@@ -27,10 +27,7 @@ class State:
             return
 
         for i in range(len(self.buffer)):
-            if "W" in self.config.leds.pixel_order:
-                self.pixels[i] = Renderer.toRgbwTuple(self.buffer[i])
-            else:
-                self.pixels[i] = Renderer.toRgbTuple(self.buffer[i])
+            self.pixels[i] = self.buffer[i]
         self.pixels.show()
 
     def _render(self):

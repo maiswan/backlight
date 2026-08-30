@@ -1,5 +1,6 @@
 from typing import Annotated, Literal
 from pydantic import BaseModel, Field
+from ..pixels.pixel_order import PixelOrder
 
 class PwmTransport(BaseModel):
     mode: Literal["pwm"]
@@ -17,5 +18,5 @@ Transport = Annotated[
 
 class LedConfig(BaseModel):
     count: int = Field(gt=0)
-    pixel_order: str
+    pixel_order: PixelOrder = Field(...)
     transport: Transport

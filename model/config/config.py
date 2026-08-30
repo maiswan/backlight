@@ -9,7 +9,7 @@ class Config(BaseModel):
     model_config = ConfigDict(validate_assignment=True)
 
     server: ServerConfig = Field(default_factory=ServerConfig)
-    leds: LedConfig = Field(default_factory=LedConfig)
+    leds: LedConfig = Field()
     renderer: RendererConfig = Field(default_factory=RendererConfig)
     commands: list[CommandUnion] = Field(default=[])
 

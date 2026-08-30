@@ -1,6 +1,7 @@
 
 from abc import ABC, abstractmethod
 from pydantic import BaseModel
+from .pixel_order import PixelOrder
 
 class PixelBase(BaseModel, ABC):
     @property
@@ -17,7 +18,7 @@ class PixelBase(BaseModel, ABC):
         ...
 
     @abstractmethod
-    def __init__(self, pin: int, count: int, pixel_order: str):
+    def __init__(self, pin: int, count: int, pixel_order: PixelOrder):
         ...
 
     @abstractmethod
