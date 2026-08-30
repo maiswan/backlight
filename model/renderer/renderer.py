@@ -25,7 +25,7 @@ class Renderer:
         return (red, green, blue)
 
     @staticmethod
-    def render(commands: CommandUnion, buffer_length: int, need_rgbw_conversion: bool):
+    def render(commands: CommandUnion, buffer_length: int):
         now = time.monotonic()
 
         enabled_commands = sorted([ x for x in commands if x.is_enabled], key=lambda x: x.z_index)
@@ -43,6 +43,6 @@ class Renderer:
             blend_mode = command.blend if "source" in command.mode else BlendMode.NORMAL
             Blender.blend(buffer, new_buffer, command.target_indices, blend_mode, command.alpha)
 
-        scale = Renderer.toRgbwTuple if need_rgbw_conversion else Renderer.toRgbTuple
-        buffer = [ scale(i) for i in buffer ]
+        # scale = Renderer.toRgbwTuple if need_rgbw_conversion else Renderer.toRgbTuple
+        # buffer = [ scale(i) for i in buffer ]
         return (is_static, buffer)
