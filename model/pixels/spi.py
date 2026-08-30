@@ -1,12 +1,14 @@
 from pi5neo import Pi5Neo, EPixelType
+
+from ..buffer_types import RgbTuple
+from .denormalizer import Denormalizer
+from .pixel_order import PixelOrder
 from .pixel_base import PixelBase
-import time
 
 class NeoPixelSPI(PixelBase):
 
     _pixels: Pi5Neo
     _has_white_channel: bool
-    _count: int
 
     @property
     def pixels(self):
@@ -15,26 +17,20 @@ class NeoPixelSPI(PixelBase):
     def __getitem__(self, key):
         return None
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: int, value: RgbTuple):
         if self._has_white_channel:
-            r = int(value[0])
-            g = int(value[1])
-            b = int(value[2])
-            w = int(value[3])
-            self._pixels.set_led_color(key, r, g, b, w)
+            output = Denormalizer.toRgbwTuple(value)
+            self._pixels.set_led_color(key, output[0], output[1], output[2], output[3])
             return
 
-        r = int(value[0])
-        g = int(value[1])
-        b = int(value[2])
-        self._pixels.set_led_color(key, r, g, b)
+        output = Denormalizer.toRgbTuple(value)
+        self._pixels.set_led_color(key, output[0], output[1], output[2])
 
-    def __init__(self, device: str, speed_khz: int, count: int, pixel_order: str):
+    def __init__(self, device: str, speed_khz: int, count: int, pixel_order: PixelOrder):
         self._has_white_channel = "W" in pixel_order
         pixel_type = EPixelType(pixel_order)
 
         self._pixels = Pi5Neo(device, count, speed_khz, pixel_type, True)
-        self._count = count
 
     def show(self):
         self._pixels.update_strip(None)

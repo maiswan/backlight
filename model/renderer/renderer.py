@@ -4,26 +4,6 @@ from ..buffer_types import RgbTuple
 
 class Renderer:
     @staticmethod
-    def toRgbwTuple(tuple: RgbTuple):
-        red = min(max(0, tuple[0] * 255), 255)
-        green = min(max(0, tuple[1] * 255), 255)
-        blue = min(max(0, tuple[2] * 255), 255)
-
-        # Offload as much brightness to white LED as possible
-        white = min(red, green, blue)
-        red -= white
-        green -= white
-        blue -= white
-        return (red, green, blue, white)
-
-    @staticmethod
-    def toRgbTuple(tuple: RgbTuple):
-        red = min(max(0, tuple[0] * 255), 255)
-        green = min(max(0, tuple[1] * 255), 255)
-        blue = min(max(0, tuple[2] * 255), 255)
-        return (red, green, blue)
-
-    @staticmethod
     def render(commands: list[CommandUnion], buffer_length: int, now: int):
 
         enabled_commands = sorted([ x for x in commands if x.is_enabled], key=lambda x: x.z_index)
