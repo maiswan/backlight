@@ -1,7 +1,6 @@
-from enum import Enum, auto
+from enum import Enum
 import random
 from math import sqrt
-from typing import Iterable
 from .rgbToHsl import rgbToHsl, HslToRgb
 from ..buffer_types import RgbTuple, RgbBuffer
 
@@ -47,7 +46,7 @@ class BlendMode(Enum):
 class Blender:
 
     @staticmethod
-    def blend(bottom_buffer: RgbBuffer, top_buffer: RgbBuffer, indices: Iterable[int], mode: BlendMode, alpha: float):
+    def blend(bottom_buffer: RgbBuffer, top_buffer: RgbBuffer, indices: list[int], mode: BlendMode, alpha: float):
         
         blend_modes = {
             BlendMode.NORMAL: Blender.normal,
@@ -170,10 +169,6 @@ class Blender:
             return min(bottom + top, 1)
 
         return (do(bottom[0], top[0]), do(bottom[1], top[1]), do(bottom[2], top[2]))
-    
-    @staticmethod
-    def darker_color(bottom: RgbTuple, top: RgbTuple):
-        return top if (Blender.luminance(top) > Blender.luminance(bottom)) else bottom
 
 
 

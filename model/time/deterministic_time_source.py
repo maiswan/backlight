@@ -1,6 +1,6 @@
 from .time_source_base import TimeSourceBase
 
-class FakeTimeSource(TimeSourceBase):
+class DeterministicTimeSource(TimeSourceBase):
     _counter: int = 0
 
     def advance(self, duration: int):

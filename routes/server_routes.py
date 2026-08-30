@@ -1,6 +1,4 @@
-from fastapi import APIRouter, Body, status, Request, HTTPException
-from pydantic import ValidationError
-from model.state import State
+from fastapi import APIRouter, Body, status, Request
 from .payloads import IntPayload, StrPayload, ListStrPayload
 
 router = APIRouter()

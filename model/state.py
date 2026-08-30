@@ -8,14 +8,14 @@ from .renderer.renderer import Renderer
 from .renderer.transitioner import Transitioner
 from .buffer_types import RgbBuffer
 from .time.time_source_base import TimeSourceBase
-from .time.monotonic_time_source import MonotonicTimeSource
+from .time.real_time_source import RealTimeSource
 
 class State:
     config: Config
     render_task: Task | None = None
     pixels: PixelBase
     buffer: RgbBuffer | None = None
-    time_source: TimeSourceBase = MonotonicTimeSource()
+    time_source: TimeSourceBase = RealTimeSource()
 
     def initialize_render_task(self):
         if (self.render_task): self.render_task.cancel()
@@ -53,7 +53,7 @@ class State:
         if config.transitions.duration > 0:
             interval = int(1000 / config.framerate.active)
             progress = 0
-            old_buffer = self.buffer[:]
+            old_buffer = self.buffer
             new_buffer = None
             start_time = self.time_source.now()
   

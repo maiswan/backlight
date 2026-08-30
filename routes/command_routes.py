@@ -1,6 +1,4 @@
-from typing import Annotated, Union
 from fastapi import APIRouter, Body, HTTPException, status, Request
-from pydantic import Field
 from model.command_union import CommandUnion
 import uuid
 
@@ -44,37 +42,34 @@ async def delete_all(request: Request):
     state.initialize_render_task()
 
 def find_command(commands: list[CommandUnion], identifier: str):
-
     try:
         command_id = uuid.UUID(identifier)
     except ValueError: # not an UUID
         command_id = None
 
-    print(command_id)
-    print()
-
     for i, command in enumerate(commands):
         print(command.id)
         if command.name == identifier or command.id == command_id:
-            return i, command
+            return i
     
-    return -1, None
+    return -1
+
 # GET existing command
 @router.get("/{identifier}")
 async def get_command(request: Request, identifier: str):
     config = request.state.state.config
-    i, command = find_command(config.commands, identifier)
+    i = find_command(config.commands, identifier)
 
     if i == -1:
         raise HTTPException(status_code=404, detail="Command not found")
 
-    return command
+    return config.commands[i]
 
 # PUT existing command
 @router.put("/{identifier}", status_code=status.HTTP_204_NO_CONTENT)
 async def put_command(request: Request, identifier: str, command: CommandUnion = Body(...)):
     state = request.state.state
-    i, command = find_command(state.config.commands, identifier)
+    i = find_command(state.config.commands, identifier)
 
     if i == -1:
         raise HTTPException(status_code=404, detail="Command not found")
@@ -87,7 +82,7 @@ async def put_command(request: Request, identifier: str, command: CommandUnion =
 @router.patch("/{identifier}", status_code=status.HTTP_204_NO_CONTENT)
 async def patch_command(request: Request, identifier: str):
     state = request.state.state
-    i, command = find_command(state.config.commands, identifier)
+    i = find_command(state.config.commands, identifier)
 
     if i == -1:
         raise HTTPException(status_code=404, detail="Command not found")
@@ -97,7 +92,6 @@ async def patch_command(request: Request, identifier: str):
         raise HTTPException(status_code=422, detail="Use PUT to change mode")
 
     for key, value in body.items():
-
         setattr(state.config.commands[i], key, value)
         
     state.config.write()

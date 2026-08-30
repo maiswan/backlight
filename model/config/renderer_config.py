@@ -6,8 +6,8 @@ class FramerateConfig(BaseModel):
     idle: float = Field(ge=0, default=0)     # 0 => don't redraw
 
 class TransitionConfig(BaseModel):
-    duration: float = Field(ge=0, default=1000) # 0 => no transition
-    mode: EasingMode = Field(default=EasingMode.OUT_CUBIC)
+    duration: float = Field(ge=0, default=2000) # 0 => no transition
+    mode: EasingMode = Field(default=EasingMode.IN_OUT_CUBIC)
 
 class RendererConfig(BaseModel):
     framerate: FramerateConfig = Field(default_factory=FramerateConfig)

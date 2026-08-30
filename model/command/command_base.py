@@ -8,9 +8,7 @@ from uuid import UUID
 from ..renderer.blender import BlendMode
 from ..buffer_types import RgbBuffer
 
-class CommandBase(BaseModel, ABC):
-    mode: ClassVar[str]                                 # discriminator
-    
+class CommandBase(BaseModel, ABC):    
     id: UUID = Field(default_factory=uuid4)
     name: str = Field(default="")                       # user-friendly name
     
@@ -36,11 +34,11 @@ class CommandBase(BaseModel, ABC):
         if (not self.is_enabled):
             return
 
-        if (self.targets != self._prev_targets):
+        if (self._target_indices is None or self.targets != self._prev_targets):
             self._target_indices = self.compile_targets(led_count)
             self._prev_targets = self.targets
 
-        self._compute(buffer, self.target_indices, time)
+        self._compute(buffer, self._target_indices, time)
 
     def compile_targets(self, led_count: int):
         if not self.targets:
@@ -55,7 +53,7 @@ class CommandBase(BaseModel, ABC):
             else:
                 indices.add(int(item))
 
-        return sorted(indices)
+        return list(sorted(indices))
 
 
     @abstractmethod

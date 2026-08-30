@@ -1,5 +1,5 @@
-from typing import Iterable, List, Literal
-from pydantic import Field, model_validator
+from typing import Iterable, Literal
+from pydantic import Field
 from .command_source_base import CommandSourceBase
 from ...buffer_types import RgbBuffer
 

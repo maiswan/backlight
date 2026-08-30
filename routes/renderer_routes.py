@@ -1,6 +1,4 @@
-from fastapi import APIRouter, Body, status, Request, HTTPException
-from pydantic import ValidationError
-from model.state import State
+from fastapi import APIRouter, Body, status, Request
 from model.renderer.transitioner import EasingMode
 from .payloads import FloatPayload, StrPayload
 
@@ -48,12 +46,12 @@ async def put_transitions_duration(request: Request, payload: FloatPayload = Bod
 
 # transitions/mode
 @router.get("/transitions/mode")
-async def get_transitions_duration(request: Request):
+async def get_transitions_mode(request: Request):
     state = request.state.state
     return state.config.renderer.transitions.mode
 
 @router.put("/transitions/mode", status_code=status.HTTP_204_NO_CONTENT)
-async def put_transitions_duration(request: Request, payload: StrPayload = Body(...)):
+async def put_transitions_mode(request: Request, payload: StrPayload = Body(...)):
     state = request.state.state
     state.config.renderer.transitions.mode = EasingMode(payload.value)
     state.config.write()
