@@ -14,45 +14,63 @@ backlight is a FastAPI-based LED controller for WS281x strips (WS2812B, SK6812, 
 ## Setup
 ### 1. Initialize a Python virtual environment
 ```bash
-python -m venv .venv
+python -m venv --system-site-packages .venv
 source .venv/bin/activate
 ```
 
-### 2a. Install packages (NOT For Pi 5)
+### 2. Install packages
+ 
+#### 2a. To use PWM and _not_ a Pi 5 (recommended):
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2b. Install packages and expand SPI buffer (For Pi 5 only)
-> [!WARNING]
-> This section only necessary if you have a Pi 5 or if you use SPI instead of PWM to control the LEDs.
+#### 2b. To use PWM and a Pi 5:
 
-1. Install packages
+WIP.
+
+#### 2c. To use SPI (don't):
 
 ```bash
-pip install -r requirements-pi-5.txt
+pip install -r requirements-spi.txt
 ```
 
-2. Enable the SPI Interface with `sudo raspi-config`
-    
-    Select _3 Interface Options_, then _I4 SPI_, then _Yes_.
+1. Enable SPI interface
+```bash
+sudo raspi-config
+# Select 3 Interface Options > I4 SPI > Yes
+```
 
-3. Expand the SPI buffer
+2. Expand SPI buffer: edit `/boot/firmware/cmdline.txt` and append the following setting to the end of the line
 
-    Edit `/boot/cmdline` and append `spidev.bufsiz = 65535` to the same line. Reboot.
+```
+spidev.bufsiz=32768
+```
 
-4. Instruct backlight to use SPI
+3. Reboot
+4. Edit `config.json`
 
-    Edit `config.json` and set `mode` (under `leds` and `transport`) to `spi`
+```json
+{
+    "led": {
+        ...
+        "transport": {
+            "mode": "spi",
+            "speed_khz": 640
+        }
+        ...
+    }
+    ...
+}
+```
 
-5. Connect the LED data line to the SPI MOSI data pin (default is GPIO pin 10, aka physical pin 19)
+5. Connect the LED data line to the SPI MOSI data pin (i.e., GPIO pin 10, aka physical pin 19)
 
 
 ### 3. Final touches
 Modify `config.json` as needed.
 
-Run (`sudo` as needed).
 ```bash
 chmod 755 backlight.sh 
 ./backlight.sh

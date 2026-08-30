@@ -1,5 +1,5 @@
 fastapi
 uvicorn[standard]
+rpi-lgpio
 pi5neo ~= 1.1
-python3-lgpio
 pydantic

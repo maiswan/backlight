@@ -4,18 +4,19 @@ import os
 from .pixels.pixel_base import PixelBase
 from .config.config import Config
 from .config.led_config import SpiTransport
+from .config.led_config import PwmPi5Transport
 from .renderer.renderer import Renderer
 from .renderer.transitioner import Transitioner
 from .buffer_types import RgbBuffer
 from .time.time_source_base import TimeSourceBase
-from .time.real_time_source import RealTimeSource
+from .time.deterministic_time_source import DeterministicTimeSource
 
 class State:
     config: Config
     render_task: Task | None = None
     pixels: PixelBase
     buffer: RgbBuffer | None = None
-    time_source: TimeSourceBase = RealTimeSource()
+    time_source: TimeSourceBase = DeterministicTimeSource()
 
     def initialize_render_task(self):
         if (self.render_task): self.render_task.cancel()
@@ -44,18 +45,19 @@ class State:
         is_static = False
 
         if self.buffer is None:
-            self.buffer = [(0.0, 0.0, 0.0)] * self.config.leds.count
+            self.buffer: RgbBuffer = [(0.0, 0.0, 0.0)] * self.config.leds.count
 
         # Transition
         if config.transitions.duration > 0:
             interval = int(1000 / config.framerate.active)
-            progress = 0
+            progress: float = 0
             old_buffer = self.buffer
             new_buffer = None
             start_time = self.time_source.now()
   
             while progress < 1:
                 progress = (self.time_source.now() - start_time) / config.transitions.duration
+
                 if not is_static or new_buffer is None:
                     is_static, new_buffer = self._render()
                 
@@ -119,6 +121,15 @@ class State:
                 self.config.leds.transport.speed_khz,
                 self.config.leds.count,
                 self.config.leds.pixel_order
+            )
+            return
+
+        if isinstance(self.config.leds.transport, PwmPi5Transport):
+            from .pixels.pwm_pi5 import NeoPixelPWMPi5
+            self.pixels = NeoPixelPWMPi5(
+                self.config.leds.transport.pin,
+                self.config.leds.count,
+                self.config.leds.pixel_order,
             )
             return
             

@@ -48,7 +48,6 @@ def find_command(commands: list[CommandUnion], identifier: str):
         command_id = None
 
     for i, command in enumerate(commands):
-        print(command.id)
         if command.name == identifier or command.id == command_id:
             return i
     
