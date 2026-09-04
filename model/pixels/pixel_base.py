@@ -1,32 +1,34 @@
 
 from abc import ABC, abstractmethod
+from typing import Iterable, Any, Literal
 from pydantic import BaseModel
+from ..buffer_types import RgbTuple
 from .pixel_order import PixelOrder
 
 class PixelBase(BaseModel, ABC):
-    @property
+
     @abstractmethod
-    def pixels(self):
+    def __enter__(self) -> Any:
         ...
 
     @abstractmethod
-    def __getitem__(self, key):
+    def __exit__(self, exc_type, exc_value, traceback) -> Literal[False]:
         ...
 
     @abstractmethod
-    def __setitem__(self, key, value):
+    def __getitem__(self, key: int) -> Any:
         ...
 
     @abstractmethod
-    def __init__(self, pin: int, count: int, pixel_order: PixelOrder):
+    def __setitem__(self, key: int, value: RgbTuple) -> None:
         ...
 
     @abstractmethod
-    def show(self):
+    def show(self) -> None:
         ...
 
     @abstractmethod
-    def clear(self):
+    def clear(self) -> None:
         ...
 
     

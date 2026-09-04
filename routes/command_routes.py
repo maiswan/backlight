@@ -4,12 +4,6 @@ import uuid
 
 router = APIRouter()
 
-# POST anything to redraw
-@router.post("/redraw", status_code=status.HTTP_204_NO_CONTENT)
-async def post_redraw(request: Request):
-    state = request.state.state
-    state.initialize_render_task()
-
 # GET all commands
 @router.get("/")
 async def get_all(request: Request):
@@ -22,7 +16,7 @@ async def post(request: Request, command: CommandUnion = Body(...)):
     state = request.state.state
     state.config.commands.append(command)
     state.config.write()
-    state.initialize_render_task()
+    state.restart_rendering()
     return command
 
 # PUT new commands and remove existing commands
@@ -31,7 +25,7 @@ async def put_all(request: Request, commands: list[CommandUnion] = Body(...)):
     state = request.state.state
     state.config.commands = commands[::]
     state.config.write()
-    state.initialize_render_task()
+    state.restart_rendering()
 
 # DELETE all existing commands
 @router.delete("/", status_code=status.HTTP_204_NO_CONTENT)
@@ -39,7 +33,7 @@ async def delete_all(request: Request):
     state = request.state.state
     state.config.commands = []
     state.config.write()
-    state.initialize_render_task()
+    state.restart_rendering()
 
 def find_command(commands: list[CommandUnion], identifier: str):
     try:
@@ -75,7 +69,7 @@ async def put_command(request: Request, identifier: str, command: CommandUnion =
 
     state.config.commands[i] = command
     state.config.write()
-    state.initialize_render_task()
+    state.restart_rendering()
 
 # PATCH existing command
 @router.patch("/{identifier}", status_code=status.HTTP_204_NO_CONTENT)
@@ -94,7 +88,7 @@ async def patch_command(request: Request, identifier: str):
         setattr(state.config.commands[i], key, value)
         
     state.config.write()
-    state.initialize_render_task()
+    state.restart_rendering()
         
 # DELETE existing command
 @router.delete("/{identifier}", status_code=status.HTTP_204_NO_CONTENT)
@@ -102,4 +96,4 @@ async def delete_command(request: Request, identifier: str):
     state = request.state.state
     state.config.commands = [ x for x in state.config.commands if not (x.name == identifier or x.id == identifier) ]
     state.config.write()
-    state.initialize_render_task()
+    state.restart_rendering()

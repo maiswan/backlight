@@ -3,10 +3,10 @@ from model.state import State
 
 # HTTP server
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from routes.normalize_path_middleware import NormalizePathMiddleware
 from routes.server_routes import router as server_router
 from routes.led_routes import router as led_router
 from routes.renderer_routes import router as renderer_router
@@ -16,12 +16,9 @@ from routes.home_routes import router as home_router
 state = State()
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
-    state.initialize_output()
-    yield { "state": state }
-
-    # actions on exit
-    state.deconstruct()
+async def lifespan(_: FastAPI):
+    with State() as state:
+        yield { "state": state }
 
 app = FastAPI(
     title="LED controller for WS2812B",
@@ -33,8 +30,9 @@ app.add_middleware(
     allow_origins=["*"],
     allow_credentials=False,
     allow_methods=["GET", "PUT", "PATCH", "POST", "DELETE"],
-    allow_headers=["*"],
 )
+
+app.add_middleware(NormalizePathMiddleware)
 
 version = {
     "major": 4,

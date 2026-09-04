@@ -4,7 +4,6 @@ import os
 from .pixels.pixel_base import PixelBase
 from .config.config import Config
 from .config.led_config import SpiTransport
-from .config.led_config import PwmPi5Transport
 from .renderer.renderer import Renderer
 from .renderer.transitioner import Transitioner
 from .buffer_types import RgbBuffer
@@ -12,16 +11,70 @@ from .time.time_source_base import TimeSourceBase
 from .time.deterministic_time_source import DeterministicTimeSource
 
 class State:
-    config: Config
-    render_task: Task | None = None
-    pixels: PixelBase
-    buffer: RgbBuffer | None = None
-    time_source: TimeSourceBase = DeterministicTimeSource()
 
-    def initialize_render_task(self):
-        if (self.render_task): self.render_task.cancel()
+    def __init__(self):
+        config_path = self._get_config_path()
+        self.config = Config.load(config_path)
+        self.buffer: RgbBuffer = [(0.0, 0.0, 0.0)] * self.config.leds.count
+        self.render_task: Task | None = None
+        self.pixels: PixelBase
+        self.time_source: TimeSourceBase = DeterministicTimeSource()
+
+    def _get_config_path(self):
+        CONFIG_PATHS = [
+            'config.dev.json',
+            'config.prod.json',
+            'config.json'
+        ]
+
+        for config_path in CONFIG_PATHS:
+            if os.path.exists(config_path):
+                return config_path
+            
+        raise Exception("No configuration file found")
+
+    def __enter__(self):
+        self.pixels = self._get_pixels()
+        self.pixels.__enter__()
+
+        for command in self.config.commands:
+            command.clear_target_cache()
+
+        self.restart_rendering()
+        return self
+    
+    def _get_pixels(self):
+        if isinstance(self.config.leds.transport, SpiTransport):
+            from .pixels.spi import NeoPixelSPI
+            return NeoPixelSPI(
+                self.config.leds.transport.device,
+                self.config.leds.transport.speed_khz,
+                self.config.leds.count,
+                self.config.leds.pixel_order
+            )
+
+        from .pixels.pwm import NeoPixelPWM
+        return NeoPixelPWM(
+            self.config.leds.transport.pin,
+            self.config.leds.count,
+            self.config.leds.pixel_order,
+        )
+
+    def restart_rendering(self):
+        if (self.render_task):
+            self.render_task.cancel()
         loop = asyncio.get_event_loop()
         self.render_task = loop.create_task(self._render_loop())
+                
+    def __exit__(self, exc_type, exc_value, traceback):
+        if (self.render_task): 
+                    self.render_task.cancel() 
+
+        if (self.pixels):
+            self.pixels.clear()
+            self.pixels.__exit__(exc_type, exc_value, traceback)
+
+        self.config.write()
 
     def _redraw(self):
         if self.buffer is None:
@@ -43,9 +96,6 @@ class State:
 
         # Populate buffer if None
         is_static = False
-
-        if self.buffer is None:
-            self.buffer: RgbBuffer = [(0.0, 0.0, 0.0)] * self.config.leds.count
 
         # Transition
         if config.transitions.duration > 0:
@@ -88,63 +138,3 @@ class State:
             self._redraw()
             self.time_source.advance(interval)
             await asyncio.sleep(interval / 1000)
-
-    def _get_config_path(self):
-        CONFIG_PATHS = [
-            'config.dev.json',
-            'config.prod.json',
-            'config.json'
-        ]
-
-        for config_path in CONFIG_PATHS:
-            if os.path.exists(config_path):
-                return config_path
-            
-        raise Exception("No configuration file found")
-
-    def __init__(self):
-        config_path = self._get_config_path()
-        self.config = Config.load(config_path)
-
-    def initialize_output(self):
-        self.buffer = None
-        self._initialize_pixels()
-        self.initialize_render_task()
-        for command in self.config.commands:
-            command.clear_target_cache()
-
-    def _initialize_pixels(self):
-        if isinstance(self.config.leds.transport, SpiTransport):
-            from .pixels.spi import NeoPixelSPI
-            self.pixels = NeoPixelSPI(
-                self.config.leds.transport.device,
-                self.config.leds.transport.speed_khz,
-                self.config.leds.count,
-                self.config.leds.pixel_order
-            )
-            return
-
-        if isinstance(self.config.leds.transport, PwmPi5Transport):
-            from .pixels.pwm_pi5 import NeoPixelPWMPi5
-            self.pixels = NeoPixelPWMPi5(
-                self.config.leds.transport.pin,
-                self.config.leds.count,
-                self.config.leds.pixel_order,
-            )
-            return
-            
-        from .pixels.pwm import NeoPixelPWM
-        self.pixels = NeoPixelPWM(
-            self.config.leds.transport.pin,
-            self.config.leds.count,
-            self.config.leds.pixel_order,
-        )
-    
-    def uninitialize_output(self):
-        if (self.render_task): 
-            self.render_task.cancel() 
-            self.pixels.clear()
-
-    def deconstruct(self):
-        self.uninitialize_output()
-        self.config.write()

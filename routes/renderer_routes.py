@@ -1,59 +1,36 @@
 from fastapi import APIRouter, Body, status, Request
-from model.renderer.transitioner import EasingMode
-from .payloads import FloatPayload, StrPayload
+from fastapi.exceptions import RequestValidationError
+from pydantic import ValidationError
+from model.config.renderer_config import RendererConfig
+from .deep_merge import deep_merge
 
 router = APIRouter()
 
-# framerate/active
-@router.get("/framerate/active")
-async def get_framerate_active(request: Request):
+# GET
+@router.get("/")
+async def get(request: Request):
     state = request.state.state
-    return state.config.renderer.framerate.active
+    return state.config.renderer
 
-@router.put("/framerate/active", status_code=status.HTTP_204_NO_CONTENT)
-async def pyt_framerate_active(request: Request, payload: FloatPayload = Body(...)):
+# PATCH
+@router.patch("/", status_code=status.HTTP_204_NO_CONTENT)
+async def patch(request: Request, payload = Body(...)):
     state = request.state.state
-    state.config.renderer.framerate.active = payload.value
-    state.config.write()
-    state.initialize_render_task()
 
-# framerate/idle
-@router.get("/framerate/idle")
-async def get_fps_static(request: Request):
+    current = state.config.leds.model_dump()
+    merged = deep_merge(current, payload)
+
+    try:
+        validated = RendererConfig.model_validate(merged)
+        state.config.leds = validated
+        state.config.write()
+
+    except ValidationError as e:
+        raise RequestValidationError(e.errors()) from e
+
+
+# POST anything to redraw
+@router.post("/redraw", status_code=status.HTTP_204_NO_CONTENT)
+async def post(request: Request):
     state = request.state.state
-    return state.config.renderer.framerate.idle
-
-@router.put("/framerate/idle", status_code=status.HTTP_204_NO_CONTENT)
-async def put_fps_static(request: Request, payload: FloatPayload = Body(...)):
-    state = request.state.state
-    state.config.renderer.framerate.idle = payload.value
-    state.config.write()
-    state.initialize_render_task()
-
-
-# transitions/duration
-@router.get("/transitions/duration")
-async def get_transitions_duration(request: Request):
-    state = request.state.state
-    return state.config.renderer.transitions.duration
-
-@router.put("/transitions/duration", status_code=status.HTTP_204_NO_CONTENT)
-async def put_transitions_duration(request: Request, payload: FloatPayload = Body(...)):
-    state = request.state.state
-    state.config.renderer.transitions.duration = payload.value
-    state.config.write()
-    state.initialize_render_task()
-
-# transitions/mode
-@router.get("/transitions/mode")
-async def get_transitions_mode(request: Request):
-    state = request.state.state
-    return state.config.renderer.transitions.mode
-
-@router.put("/transitions/mode", status_code=status.HTTP_204_NO_CONTENT)
-async def put_transitions_mode(request: Request, payload: StrPayload = Body(...)):
-    state = request.state.state
-    state.config.renderer.transitions.mode = EasingMode(payload.value)
-    state.config.write()
-    state.initialize_render_task()
-
+    state.restart_rendering()

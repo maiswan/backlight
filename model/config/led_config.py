@@ -6,17 +6,13 @@ class PwmTransport(BaseModel):
     mode: Literal["pwm"]
     pin: int = Field(gt=0)
 
-class PwmPi5Transport(BaseModel):
-    mode: Literal["pwm-pi5"]
-    pin: int = Field(gt=0)
-
 class SpiTransport(BaseModel):
     mode: Literal["spi"]
     device: str = Field(default="/dev/spidev0.0")
     speed_khz: int = Field(gt=0)
 
 Transport = Annotated[
-    PwmTransport | PwmPi5Transport | SpiTransport,
+    PwmTransport | SpiTransport,
     Field(discriminator="mode")
 ]
 
