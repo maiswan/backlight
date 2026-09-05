@@ -1,7 +1,9 @@
 from .time_source_base import TimeSourceBase
 
 class DeterministicTimeSource(TimeSourceBase):
-    _counter: int = 0
+
+    def __init__(self):
+        self._counter = 0
 
     def advance(self, duration: int):
         self._counter += duration

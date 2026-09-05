@@ -2,7 +2,9 @@ from .time_source_base import TimeSourceBase
 import time
 
 class RealTimeSource(TimeSourceBase):
-    _counter: int = int(time.monotonic() * 1000)
+
+    def __init__(self):
+        self.advance(0)
 
     def advance(self, duration: int):
         # can't arbitrarily control time in real life

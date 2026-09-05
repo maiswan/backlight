@@ -6,8 +6,8 @@ from .config.led_config import SpiTransport
 from .renderer.renderer import Renderer
 from .renderer.transitioner import Transitioner
 from .buffer_types import RgbBuffer
-from .time.time_source_base import TimeSourceBase
 from .time.deterministic_time_source import DeterministicTimeSource
+from .time.real_time_source import RealTimeSource
 
 class State:
 
@@ -16,7 +16,6 @@ class State:
         self.buffer: RgbBuffer = [(0.0, 0.0, 0.0)] * self.config.leds.count
         self.render_task: Task | None = None
         self.pixels: PixelBase
-        self.time_source: TimeSourceBase = DeterministicTimeSource()
 
     def __enter__(self):
         self.pixels = self._get_pixels()
@@ -69,17 +68,16 @@ class State:
             self.pixels[i] = self.buffer[i]
         self.pixels.show()
 
-    def _render(self):
+    def _render(self, time: int):
         return Renderer.render(
             self.config.commands,
             self.config.leds.count,
-            self.time_source.now()
+            time
         )
                 
     async def _render_loop(self):
         config = self.config.renderer
-
-        # Populate buffer if None
+        time = RealTimeSource() if config.time.source == "real" else DeterministicTimeSource()
         is_static = False
 
         # Transition
@@ -88,23 +86,23 @@ class State:
             progress: float = 0
             old_buffer = self.buffer
             new_buffer = None
-            start_time = self.time_source.now()
+            start_time = time.now()
   
             while progress < 1:
-                progress = (self.time_source.now() - start_time) / config.transitions.duration
+                progress = (time.now() - start_time) / config.transitions.duration
 
                 if not is_static or new_buffer is None:
-                    is_static, new_buffer = self._render()
+                    is_static, new_buffer = self._render(time.now())
                 
                 self.buffer = Transitioner.transit(old_buffer, new_buffer, progress, config.transitions.mode)
                 self._redraw()
 
-                self.time_source.advance(interval)
+                time.advance(interval)
                 await asyncio.sleep(interval / 1000)
 
         # Fast exit if the user doesn't want to rerender static content repeatedly
         if (is_static and config.framerate.idle <= 0):
-            _, self.buffer = self._render()
+            _, self.buffer = self._render(time.now())
             self._redraw()
             return
             
@@ -119,7 +117,7 @@ class State:
         # ANIMATED: rerender then redraw
         interval = int(1000 / config.framerate.active)
         while True:
-            _, self.buffer = self._render()
+            _, self.buffer = self._render(time.now())
             self._redraw()
-            self.time_source.advance(interval)
+            time.advance(interval)
             await asyncio.sleep(interval / 1000)
