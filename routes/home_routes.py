@@ -22,12 +22,12 @@ async def get_stream(state: State):
         print("Exiting stream.")
 
 # GET overview
-@router.get("/")
+@router.get("")
 async def get_config(request: Request):
     state = request.state.state
     return state.config.model_dump(mode='json')
 
-@router.get("/stream")
+@router.get("stream")
 async def get_config_stream(request: Request):
     state = request.state.state
     return StreamingResponse(get_stream(state), media_type="text/event-stream")

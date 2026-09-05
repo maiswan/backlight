@@ -6,7 +6,6 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from routes.normalize_path_middleware import NormalizePathMiddleware
 from routes.server_routes import router as server_router
 from routes.led_routes import router as led_router
 from routes.renderer_routes import router as renderer_router
@@ -32,7 +31,7 @@ app.add_middleware(
     allow_methods=["GET", "PUT", "PATCH", "POST", "DELETE"],
 )
 
-app.add_middleware(NormalizePathMiddleware)
+# app.add_middleware(NormalizePathMiddleware)
 
 version = {
     "major": 4,

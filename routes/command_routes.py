@@ -5,13 +5,13 @@ import uuid
 router = APIRouter()
 
 # GET all commands
-@router.get("/")
+@router.get("")
 async def get_all(request: Request):
     state = request.state.state
     return state.config.commands
 
 # POST new command
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("", status_code=status.HTTP_201_CREATED)
 async def post(request: Request, command: CommandUnion = Body(...)):
     state = request.state.state
     state.config.commands.append(command)
@@ -20,7 +20,7 @@ async def post(request: Request, command: CommandUnion = Body(...)):
     return command
 
 # PUT new commands and remove existing commands
-@router.put("/", status_code=status.HTTP_204_NO_CONTENT)
+@router.put("", status_code=status.HTTP_204_NO_CONTENT)
 async def put_all(request: Request, commands: list[CommandUnion] = Body(...)):
     state = request.state.state
     state.config.commands = commands[::]
@@ -28,7 +28,7 @@ async def put_all(request: Request, commands: list[CommandUnion] = Body(...)):
     state.restart_rendering()
 
 # DELETE all existing commands
-@router.delete("/", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_all(request: Request):
     state = request.state.state
     state.config.commands = []
