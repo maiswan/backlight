@@ -1,16 +1,17 @@
 from typing import Iterable, Literal
 from pydantic import Field
-from .command_source_base import CommandSourceBase
+from ..command_base import CommandBase
 from .hsvToRgb import hsvToRgb
 from ...renderer import RgbBuffer
 
-class CommandSourceRainbowRolling(CommandSourceBase):
-    mode: Literal["source_rainbow_rolling"] = "source_rainbow_rolling"
+class CommandSourceRainbowRolling(CommandBase):
+    mode: Literal["source_rainbow_rolling"] = "source_rainbow_rolling" # type: ignore
+    is_static = False
+
     period: int = Field(ge=1000, default=5000)
     wavelength: int = Field(ge=1, default=64)
     saturation: float = Field(ge=0, le=1, default=1)
     propagation: int = Field(ge=0, le=1, default=1)
-    is_static = False
 
     def _compute(self, buffer: RgbBuffer, targets: Iterable[int], time: float):
         

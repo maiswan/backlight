@@ -5,7 +5,7 @@ from ..command_base import CommandBase
 from ...renderer import RgbBuffer
 
 class CommandTransformBrightnessRolling(CommandBase):
-    mode: Literal["transform_brightness_rolling"] = "transform_brightness_rolling"
+    mode: Literal["transform_brightness_rolling"] = "transform_brightness_rolling" # type: ignore
     min_brightness: float = Field(ge=0.0, le=4.0, default=0.0)
     max_brightness: float = Field(ge=0.0, le=4.0, default=1.0)
     period: int = Field(ge=1000, default=5000)

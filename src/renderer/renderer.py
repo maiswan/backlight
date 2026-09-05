@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from .blender import Blender, BlendMode
 
 if TYPE_CHECKING:
-    from ..command_union import CommandUnion
+    from ..command import CommandUnion
 
 class Renderer:
     @staticmethod

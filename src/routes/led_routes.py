@@ -2,8 +2,8 @@ from fastapi import APIRouter, Body, status, Request
 from fastapi.exceptions import RequestValidationError
 from pydantic import ValidationError
 
-from model.config.led_config import LedConfig
-from routes.deep_merge import deep_merge
+from ..config import LedConfig
+from .deep_merge import deep_merge
 
 router = APIRouter()
 

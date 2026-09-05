@@ -4,7 +4,7 @@ from ..command_base import CommandBase
 from ...renderer import RgbBuffer
 
 class CommandTransformBrightness(CommandBase):
-    mode: Literal["transform_brightness"] = "transform_brightness"
+    mode: Literal["transform_brightness"] = "transform_brightness" # type: ignore
     brightness: float = Field(ge=0.0, le=4.0, default=1.0)
     is_static = True
 

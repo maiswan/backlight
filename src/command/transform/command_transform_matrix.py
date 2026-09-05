@@ -4,7 +4,7 @@ from ..command_base import CommandBase
 from ...renderer import RgbBuffer
 
 class CommandTransformMatrix(CommandBase):
-    mode: Literal["transform_matrix"] = "transform_matrix"
+    mode: Literal["transform_matrix"] = "transform_matrix" # type: ignore
     m11: float = Field(ge=-5.0, le=5.0, default=1.0)
     m12: float = Field(ge=-5.0, le=5.0, default=0.0)
     m13: float = Field(ge=-5.0, le=5.0, default=0.0)

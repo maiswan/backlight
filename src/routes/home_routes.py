@@ -1,8 +1,8 @@
 import asyncio
 import copy
-from fastapi import APIRouter, Body, Request
+from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
-from model.state import State
+from .. import State
 
 router = APIRouter()
 

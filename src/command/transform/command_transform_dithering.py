@@ -4,7 +4,7 @@ from ..command_base import CommandBase
 from ...renderer import RgbBuffer
 
 class CommandTransformDithering(CommandBase):
-    mode: Literal["transform_dithering"] = "transform_dithering"
+    mode: Literal["transform_dithering"] = "transform_dithering" # type: ignore
     min_red: int = Field(ge=1, default=1)
     min_green: int = Field(ge=1, default=1)
     min_blue: int = Field(ge=1, default=1)

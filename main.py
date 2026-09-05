@@ -1,12 +1,8 @@
-# Singleton config
-from model.state import State
-
-# HTTP server
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from routes import server_router, led_router, renderer_router, command_router, home_router
+from src import State, server_router, led_router, renderer_router, command_router, home_router
 
 state = State()
 

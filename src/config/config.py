@@ -1,6 +1,7 @@
 import os
 from pydantic import BaseModel, Field, ConfigDict
-from ..command_union import CommandUnion
+
+from ..command import CommandUnion
 from .led_config import LedConfig
 from .renderer_config import RendererConfig
 from .server_config import ServerConfig

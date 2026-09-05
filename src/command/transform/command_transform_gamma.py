@@ -4,7 +4,7 @@ from ..command_base import CommandBase
 from ...renderer import RgbBuffer
 
 class CommandTransformGamma(CommandBase):
-    mode: Literal["transform_gamma"] = "transform_gamma"
+    mode: Literal["transform_gamma"] = "transform_gamma" # type: ignore
     gamma: float = Field(ge=0.1, le=5.0, default=2.2)
     is_static = True
 

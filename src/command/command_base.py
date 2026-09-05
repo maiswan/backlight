@@ -1,14 +1,17 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import ClassVar, Iterable
+from typing_extensions import ReadOnly
 from uuid import uuid4
 from pydantic import BaseModel, Field
 from uuid import UUID
 
-from ..renderer import BlendMode
-from ..renderer.buffer_types import RgbBuffer
+from ..renderer import BlendMode, RgbBuffer
 
 class CommandBase(BaseModel, ABC):    
+
+    mode: str
+
     id: UUID = Field(default_factory=uuid4)
     name: str = Field(default="")                       # user-friendly name
     

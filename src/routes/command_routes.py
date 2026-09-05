@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Body, HTTPException, status, Request
-from model.command_union import CommandUnion
 import uuid
+from ..command import CommandUnion
 
 router = APIRouter()
 
