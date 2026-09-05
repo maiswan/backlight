@@ -1,6 +1,5 @@
 from asyncio import Task
 import asyncio
-import os
 from .pixels.pixel_base import PixelBase
 from .config.config import Config
 from .config.led_config import SpiTransport
@@ -13,25 +12,11 @@ from .time.deterministic_time_source import DeterministicTimeSource
 class State:
 
     def __init__(self):
-        config_path = self._get_config_path()
-        self.config = Config.load(config_path)
+        self.config = Config.load()
         self.buffer: RgbBuffer = [(0.0, 0.0, 0.0)] * self.config.leds.count
         self.render_task: Task | None = None
         self.pixels: PixelBase
         self.time_source: TimeSourceBase = DeterministicTimeSource()
-
-    def _get_config_path(self):
-        CONFIG_PATHS = [
-            'config.dev.json',
-            'config.prod.json',
-            'config.json'
-        ]
-
-        for config_path in CONFIG_PATHS:
-            if os.path.exists(config_path):
-                return config_path
-            
-        raise Exception("No configuration file found")
 
     def __enter__(self):
         self.pixels = self._get_pixels()
