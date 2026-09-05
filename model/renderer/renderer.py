@@ -1,6 +1,9 @@
-from ..command_union import CommandUnion
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from .blender import Blender, BlendMode
-from ..buffer_types import RgbTuple
+
+if TYPE_CHECKING:
+    from ..command_union import CommandUnion
 
 class Renderer:
     @staticmethod

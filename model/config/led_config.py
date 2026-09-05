@@ -1,6 +1,6 @@
 from typing import Annotated, Literal
 from pydantic import BaseModel, Field
-from ..pixels.pixel_order import PixelOrder
+from .pixel_order import PixelOrder
 
 class PwmTransport(BaseModel):
     mode: Literal["pwm"]

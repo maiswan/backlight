@@ -1,6 +1,6 @@
-from enum import Enum, auto
+from enum import Enum
 import math
-from ..buffer_types import RgbBuffer 
+from .buffer_types import RgbBuffer 
 
 class EasingMode(Enum):
     LINEAR = "linear"

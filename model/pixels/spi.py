@@ -1,6 +1,6 @@
 from pi5neo import Pi5Neo, EPixelType
 from .denormalizer import Denormalizer
-from .pixel_order import PixelOrder
+from ..config.pixel_order import PixelOrder
 from .pixel_base import PixelBase
 
 class NeoPixelSPI(PixelBase):

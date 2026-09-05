@@ -2,7 +2,7 @@ from enum import Enum
 import random
 from math import sqrt
 from .rgbToHsl import rgbToHsl, HslToRgb
-from ..buffer_types import RgbTuple, RgbBuffer
+from .buffer_types import RgbTuple, RgbBuffer
 
 class BlendMode(Enum):
     # Normal group

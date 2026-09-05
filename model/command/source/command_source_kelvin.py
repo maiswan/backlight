@@ -1,7 +1,7 @@
 from typing import Iterable, Literal
 from pydantic import Field
 from .command_source_base import CommandSourceBase
-from ...buffer_types import RgbBuffer
+from ...renderer import RgbBuffer
 
 class CommandSourceKelvin(CommandSourceBase):
     mode: Literal["source_kelvin"] = "source_kelvin"

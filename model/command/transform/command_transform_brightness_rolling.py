@@ -2,7 +2,7 @@ from typing import Iterable, Literal
 from pydantic import Field
 from math import sin
 from ..command_base import CommandBase
-from ...buffer_types import RgbBuffer
+from ...renderer import RgbBuffer
 
 class CommandTransformBrightnessRolling(CommandBase):
     mode: Literal["transform_brightness_rolling"] = "transform_brightness_rolling"

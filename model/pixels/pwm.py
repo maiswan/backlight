@@ -1,8 +1,8 @@
-from ..buffer_types import RgbTuple
+from ..renderer import RgbTuple
 from microcontroller import Pin
 from neopixel import NeoPixel
 from .denormalizer import Denormalizer
-from .pixel_order import PixelOrder
+from ..config.pixel_order import PixelOrder
 from .pixel_base import PixelBase
 
 class NeoPixelPWM(PixelBase):

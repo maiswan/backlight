@@ -1,7 +1,7 @@
 from typing import Iterable, Literal
 from pydantic import Field
 from ..command_base import CommandBase
-from ...buffer_types import RgbBuffer
+from ...renderer import RgbBuffer
 
 class CommandTransformBrightness(CommandBase):
     mode: Literal["transform_brightness"] = "transform_brightness"

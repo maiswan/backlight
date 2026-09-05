@@ -2,7 +2,7 @@ from typing import Iterable, Literal
 from pydantic import Field
 from .command_source_base import CommandSourceBase
 from .hsvToRgb import hsvToRgb
-from ...buffer_types import RgbBuffer
+from ...renderer import RgbBuffer
 
 class CommandSourceRainbowRolling(CommandSourceBase):
     mode: Literal["source_rainbow_rolling"] = "source_rainbow_rolling"

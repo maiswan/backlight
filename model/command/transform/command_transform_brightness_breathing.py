@@ -2,7 +2,7 @@ from typing import Iterable, Literal
 from pydantic import Field
 from math import sin, pi
 from ..command_base import CommandBase
-from ...buffer_types import RgbBuffer
+from ...renderer import RgbBuffer
 
 class CommandTransformBrightnessBreathing(CommandBase):
     mode: Literal["transform_brightness_breathing"] = "transform_brightness_breathing"

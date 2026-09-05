@@ -1,13 +1,8 @@
-from asyncio import Task
-import asyncio
-from .pixels.pixel_base import PixelBase
-from .config.config import Config
-from .config.led_config import SpiTransport
-from .renderer.renderer import Renderer
-from .renderer.transitioner import Transitioner
-from .buffer_types import RgbBuffer
-from .time.deterministic_time_source import DeterministicTimeSource
-from .time.real_time_source import RealTimeSource
+from asyncio import get_event_loop, Task, sleep
+from .config import Config
+from .pixels import PixelBase, get_pixels
+from .renderer import Renderer, Transitioner, RgbBuffer
+from .time import DeterministicTimeSource, RealTimeSource
 
 class State:
 
@@ -18,7 +13,7 @@ class State:
         self.pixels: PixelBase
 
     def __enter__(self):
-        self.pixels = self._get_pixels()
+        self.pixels = get_pixels(self.config.leds)
         self.pixels.__enter__()
 
         for command in self.config.commands:
@@ -26,28 +21,11 @@ class State:
 
         self.restart_rendering()
         return self
-    
-    def _get_pixels(self):
-        if isinstance(self.config.leds.transport, SpiTransport):
-            from .pixels.spi import NeoPixelSPI
-            return NeoPixelSPI(
-                self.config.leds.transport.device,
-                self.config.leds.transport.speed_khz,
-                self.config.leds.count,
-                self.config.leds.pixel_order
-            )
-
-        from .pixels.pwm import NeoPixelPWM
-        return NeoPixelPWM(
-            self.config.leds.transport.pin,
-            self.config.leds.count,
-            self.config.leds.pixel_order,
-        )
 
     def restart_rendering(self):
         if (self.render_task):
             self.render_task.cancel()
-        loop = asyncio.get_event_loop()
+        loop = get_event_loop()
         self.render_task = loop.create_task(self._render_loop())
                 
     def __exit__(self, exc_type, exc_value, traceback):
@@ -98,7 +76,7 @@ class State:
                 self._redraw()
 
                 time.advance(interval)
-                await asyncio.sleep(interval / 1000)
+                await sleep(interval / 1000)
 
         # Fast exit if the user doesn't want to rerender static content repeatedly
         if (is_static and config.framerate.idle <= 0):
@@ -112,7 +90,7 @@ class State:
             interval = int(1000 / config.framerate.idle)
             while True:
                 self._redraw()
-                await asyncio.sleep(interval / 1000)
+                await sleep(interval / 1000)
                 
         # ANIMATED: rerender then redraw
         interval = int(1000 / config.framerate.active)
@@ -120,4 +98,4 @@ class State:
             _, self.buffer = self._render(time.now())
             self._redraw()
             time.advance(interval)
-            await asyncio.sleep(interval / 1000)
+            await sleep(interval / 1000)

@@ -1,4 +1,4 @@
-from ..buffer_types import RgbTuple
+from ..renderer import RgbTuple
 
 class Denormalizer:
     @staticmethod

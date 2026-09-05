@@ -5,8 +5,8 @@ from uuid import uuid4
 from pydantic import BaseModel, Field
 from uuid import UUID
 
-from ..renderer.blender import BlendMode
-from ..buffer_types import RgbBuffer
+from ..renderer import BlendMode
+from ..renderer.buffer_types import RgbBuffer
 
 class CommandBase(BaseModel, ABC):    
     id: UUID = Field(default_factory=uuid4)

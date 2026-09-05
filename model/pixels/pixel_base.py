@@ -1,9 +1,8 @@
 
 from abc import ABC, abstractmethod
-from typing import Iterable, Any, Literal
+from typing import Any, Literal
 from pydantic import BaseModel
-from ..buffer_types import RgbTuple
-from .pixel_order import PixelOrder
+from ..renderer.buffer_types import RgbTuple
 
 class PixelBase(BaseModel, ABC):
 
