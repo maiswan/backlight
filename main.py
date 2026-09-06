@@ -4,6 +4,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from src import State, server_router, led_router, renderer_router, command_router, home_router
 
+version = {
+    "major": 4,
+    "minor": 0,
+    "patch": 0,
+}
+version_major = f"v{version["major"]}"
+version_str = f"{version['major']}.{version['minor']}.{version['patch']}"
+
 state = State()
 
 @asynccontextmanager
@@ -14,6 +22,7 @@ async def lifespan(_: FastAPI):
 app = FastAPI(
     title="LED controller for WS2812B",
     lifespan=lifespan,
+    version=version_str
 )
 
 app.add_middleware(
@@ -23,18 +32,11 @@ app.add_middleware(
     allow_methods=["GET", "PUT", "PATCH", "POST", "DELETE"],
 )
 
-version = {
-    "major": 4,
-    "minor": 0,
-    "patch": 0,
-}
-major = version["major"]
-
-app.include_router(server_router, prefix=f"/api/v{major}/server", tags=["server"])
-app.include_router(led_router, prefix=f"/api/v{major}/leds", tags=["leds"])
-app.include_router(renderer_router, prefix=f"/api/v{major}/renderer", tags=["renderer"])
-app.include_router(command_router, prefix=f"/api/v{major}/commands", tags=["commands"])
-app.include_router(home_router, prefix=f"/api/v{major}", tags=["home"])
+app.include_router(server_router, prefix=f"/api/{version_major}/server", tags=["server"])
+app.include_router(led_router, prefix=f"/api/{version_major}/leds", tags=["leds"])
+app.include_router(renderer_router, prefix=f"/api/{version_major}/renderer", tags=["renderer"])
+app.include_router(command_router, prefix=f"/api/{version_major}/commands", tags=["commands"])
+app.include_router(home_router, prefix=f"/api/{version_major}", tags=["home"])
 app.mount("/dashboard", StaticFiles(directory="dashboard/dist", html=True))
 
 @app.get("/")
@@ -42,7 +44,7 @@ async def root():
     return {
         "program": "backlight",
         "author": "maiswan",
-        "version": f"{version['major']}.{version['minor']}.{version['patch']}"
+        "version": version_str
     }
 
 if __name__ == "__main__":
