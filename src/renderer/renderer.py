@@ -20,6 +20,9 @@ class Renderer:
             command.execute(new_buffer, buffer_length, now)
 
             # Blend
+            if (command.target_indices is None):
+                continue
+
             # Transform commands do not support the blend property (since it doesn't really makes sense)
             blend_mode = command.blend if "source" in command.mode else BlendMode.NORMAL
             Blender.blend(buffer, new_buffer, command.target_indices, blend_mode, command.alpha)
