@@ -15,7 +15,6 @@ class CommandBase(BaseModel, ABC):
     id: UUID = Field(default_factory=uuid4)
     name: str = Field(default="")                       # user-friendly name
     
-    z_index: int = Field(default=0)                     # higher = rendered later
     alpha: float = Field(ge=0.0, le=1.0, default=1.0)
     blend: BlendMode = Field(default=BlendMode.NORMAL)
 
@@ -33,19 +32,21 @@ class CommandBase(BaseModel, ABC):
     is_static: ClassVar[bool] = False                   # set to true if this Command does not depend on the time
     is_enabled: bool = Field(default=True)
 
-    def execute(self, buffer: RgbBuffer, led_count: int, time: float):
+    def execute(self, buffer: RgbBuffer, time: float):
+
         if (not self.is_enabled):
-            return
+            return buffer
 
         if (self._target_indices is None or self.targets != self._prev_targets):
-            self._target_indices = self.compile_targets(led_count)
+            self._target_indices = self._compile_targets(len(buffer))
             self._prev_targets = self.targets
 
         self._compute(buffer, self._target_indices, time)
+        return buffer
 
-    def compile_targets(self, led_count: int):
+    def _compile_targets(self, buffer_length: int):
         if not self.targets:
-            return list(range(led_count))
+            return list(range(buffer_length))
 
         indices: set[int] = set()
 

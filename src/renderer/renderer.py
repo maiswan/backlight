@@ -6,24 +6,28 @@ if TYPE_CHECKING:
     from ..command import CommandUnion
 
 class Renderer:
+
+    @staticmethod
+    def create_buffer(buffer_length: int):
+        return [(0.0, 0.0, 0.0)] * buffer_length
+
     @staticmethod
     def render(commands: list[CommandUnion], buffer_length: int, now: int):
 
-        enabled_commands = sorted([ x for x in commands if x.is_enabled], key=lambda x: x.z_index)
+        enabled_commands = [ x for x in commands if x.is_enabled]
         is_static = all(x.is_static for x in enabled_commands)
         
-        buffer = [(0.0, 0.0, 0.0)] * buffer_length
+        buffer = Renderer.create_buffer(buffer_length)
     
         for command in enabled_commands:
             # Compute buffer
             new_buffer = buffer[:]
-            command.execute(new_buffer, buffer_length, now)
+            command.execute(new_buffer, now)
 
-            # Blend
             if (command.target_indices is None):
                 continue
 
-            # Transform commands do not support the blend property (since it doesn't really makes sense)
+            # Blend source commands (it doesn't make sense to blend transform commands)
             blend_mode = command.blend if "source" in command.mode else BlendMode.NORMAL
             Blender.blend(buffer, new_buffer, command.target_indices, blend_mode, command.alpha)
 
