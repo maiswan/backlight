@@ -25,9 +25,9 @@ async def get_stream(state: State):
 @router.get("")
 async def get_config(request: Request):
     state = request.state.state
-    return state.config.model_dump(mode='json')
+    return state.config
 
-@router.get("stream")
+@router.get("/stream")
 async def get_config_stream(request: Request):
     state = request.state.state
     return StreamingResponse(get_stream(state), media_type="text/event-stream")

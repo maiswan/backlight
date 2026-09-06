@@ -29,6 +29,12 @@ async def patch(request: Request, payload = Body(...)):
         raise RequestValidationError(e.errors()) from e
 
 
+# GET buffer
+@router.get("/buffer")
+async def get_buffer(request: Request):
+    state = request.state.state
+    return state.buffer
+
 # POST anything to redraw
 @router.post("/redraw", status_code=status.HTTP_204_NO_CONTENT)
 async def post(request: Request):

@@ -140,6 +140,11 @@ To interact with the list of commands and the renderer:
             <td>Delete a command</td>
         </tr>
         <tr>
+            <td><code>GET</code></td>
+            <td><code>/api/v4/renderer/buffer</code></td>
+            <td>Get the current renderer buffer</td>
+        </tr>
+        <tr>
             <td><code>POST</code></td>
             <td><code>/api/v4/renderer/redraw</code></td>
             <td>Restart the rendering pipeline</td>
